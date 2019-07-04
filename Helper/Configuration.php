@@ -1,8 +1,8 @@
 <?php
 
-namespace MageSuite\BulkGoods\Helper\Configuration;
+namespace MageSuite\BulkGoods\Helper;
 
-class BulkGoods extends \Magento\Framework\App\Helper\AbstractHelper
+class Configuration extends \Magento\Framework\App\Helper\AbstractHelper
 {
     const XML_PATH_BULK_GOODS_CONFIGURATION = 'bulk_goods/general';
 

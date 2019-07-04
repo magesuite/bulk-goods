@@ -25,7 +25,7 @@ class InstallData implements \Magento\Framework\Setup\InstallDataInterface
                 'type' => 'int',
                 'input' => 'boolean',
                 'source' => \Magento\Eav\Model\Entity\Attribute\Source\Boolean::class,
-                'label' => 'Bulk Good',
+                'label' => 'Is Bulk Good',
                 'group' => 'General',
                 'global' => \Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface::SCOPE_GLOBAL,
                 'visible' => 1,

@@ -2,8 +2,6 @@
 
 namespace MageSuite\BulkGoods\Model\Total\Invoice;
 
-use Magento\Sales\Model\Order\Invoice;
-
 class BulkGoodsTax extends AbstractTotal
 {
     public function collect(\Magento\Sales\Model\Order\Invoice $invoice)

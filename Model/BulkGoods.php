@@ -4,7 +4,7 @@ namespace MageSuite\BulkGoods\Model;
 
 class BulkGoods implements \MageSuite\BulkGoods\Api\BulkGoodsInterface
 {
-    const BULK_GOODS_ATTRIBUTE_CODE = 'bulk_goods_flag';
+    const BULK_GOODS_ATTRIBUTE_CODE = 'is_bulk_good';
     const BULK_GOODS_FEE_CODE = 'bulk_goods_fee';
     const BULK_GOODS_TAX_CODE = 'bulk_goods_tax';
 
@@ -14,7 +14,7 @@ class BulkGoods implements \MageSuite\BulkGoods\Api\BulkGoodsInterface
     protected $feeProvider;
 
     /**
-     * @var \MageSuite\BulkGoods\Helper\Configuration\BulkGoods
+     * @var \MageSuite\BulkGoods\Helper\Configuration
      */
     protected $configuration;
 
@@ -25,7 +25,7 @@ class BulkGoods implements \MageSuite\BulkGoods\Api\BulkGoodsInterface
 
     public function __construct(
         \MageSuite\BulkGoods\Service\FeeProvider $feeProvider,
-        \MageSuite\BulkGoods\Helper\Configuration\BulkGoods $configuration,
+        \MageSuite\BulkGoods\Helper\Configuration $configuration,
         \MageSuite\BulkGoods\Service\TaxCalculator $taxCalculator
     ) {
         $this->feeProvider = $feeProvider;
@@ -47,7 +47,7 @@ class BulkGoods implements \MageSuite\BulkGoods\Api\BulkGoodsInterface
 
     public function getBaseTaxAmount($amount)
     {
-        return $this->taxCalculator->calculateTax($amount);
+        return $this->taxCalculator->calculate($amount);
     }
 
     public function getLabel()

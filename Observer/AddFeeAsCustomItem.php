@@ -5,11 +5,11 @@ namespace MageSuite\BulkGoods\Observer;
 class AddFeeAsCustomItem implements \Magento\Framework\Event\ObserverInterface
 {
     /**
-     * @var \MageSuite\BulkGoods\Helper\Configuration\BulkGoods
+     * @var \MageSuite\BulkGoods\Helper\Configuration
      */
     protected $configuration;
 
-    public function __construct(\MageSuite\BulkGoods\Helper\Configuration\BulkGoods $configuration)
+    public function __construct(\MageSuite\BulkGoods\Helper\Configuration $configuration)
     {
         $this->configuration = $configuration;
     }

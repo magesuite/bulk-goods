@@ -9,7 +9,7 @@ class BulkGoodsConfigProvider implements \Magento\Checkout\Model\ConfigProviderI
     protected $checkoutSession;
 
     /**
-     * @var \MageSuite\BulkGoods\Helper\Configuration\BulkGoods
+     * @var \MageSuite\BulkGoods\Helper\Configuration
      */
     protected $configuration;
 
@@ -20,7 +20,7 @@ class BulkGoodsConfigProvider implements \Magento\Checkout\Model\ConfigProviderI
 
     public function __construct(
         \Magento\Checkout\Model\Session $checkoutSession,
-        \MageSuite\BulkGoods\Helper\Configuration\BulkGoods $configuration,
+        \MageSuite\BulkGoods\Helper\Configuration $configuration,
         \MageSuite\BulkGoods\Model\BulkGoods $bulkGoods
     ){
         $this->checkoutSession = $checkoutSession;

@@ -5,13 +5,13 @@ namespace MageSuite\BulkGoods\Block\Adminhtml\Sales\Total\Invoice;
 class BulkGoods extends \Magento\Framework\View\Element\Template
 {
     /**
-     * @var \MageSuite\BulkGoods\Helper\Configuration\BulkGoods
+     * @var \MageSuite\BulkGoods\Helper\Configuration
      */
     protected $configuration;
 
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
-        \MageSuite\BulkGoods\Helper\Configuration\BulkGoods $configuration,
+        \MageSuite\BulkGoods\Helper\Configuration $configuration,
         array $data = []
     ) {
         parent::__construct($context, $data);

@@ -38,7 +38,7 @@ class TaxCalculator
         $this->taxCalculation = $taxCalculation;
     }
 
-    public function calculateTax($amount)
+    public function calculate($amount)
     {
         $store = $this->storeManager->getStore();
         $shippingTaxId = $this->taxConfig->getShippingTaxClass($store);

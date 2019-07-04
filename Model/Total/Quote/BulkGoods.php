@@ -7,7 +7,7 @@ class BulkGoods extends AbstractTotal
     public function __construct(
         \Magento\Framework\App\Request\Http $request,
         \MageSuite\BulkGoods\Api\BulkGoodsInterface $bulkGoods,
-        \MageSuite\BulkGoods\Helper\Configuration\BulkGoods $configuration,
+        \MageSuite\BulkGoods\Helper\Configuration $configuration,
         \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
     ) {
         parent::__construct($request, $bulkGoods, $configuration, $priceCurrency);

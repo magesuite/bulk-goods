@@ -17,7 +17,7 @@ abstract class AbstractTotal extends \Magento\Quote\Model\Quote\Address\Total\Ab
     protected $bulkGoods;
 
     /**
-     * @var \MageSuite\BulkGoods\Helper\Configuration\BulkGoods
+     * @var \MageSuite\BulkGoods\Helper\Configuration
      */
     protected $configuration;
 
@@ -31,7 +31,7 @@ abstract class AbstractTotal extends \Magento\Quote\Model\Quote\Address\Total\Ab
     public function __construct(
         \Magento\Framework\App\Request\Http $request,
         \MageSuite\BulkGoods\Api\BulkGoodsInterface $bulkGoods,
-        \MageSuite\BulkGoods\Helper\Configuration\BulkGoods $configuration,
+        \MageSuite\BulkGoods\Helper\Configuration $configuration,
         \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
 
     ){
