@@ -14,13 +14,18 @@
                     <label>Is enabled</label>
                     <source_model>\Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="label" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="label" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Label</label>
                     <comment>This text will be displayed in the totals section.</comment>
                 </field>
-                <field id="fee" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="fee" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Fee</label>
                     <comment>This value will be added to totals, if any bulk good is in the cart.</comment>
+                </field>
+                <field id="is_free_shipping" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Is Free shipping</label>
+                    <source_model>\Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Bulk goods fee will not be added if shipping is free.</comment>
                 </field>
             </group>
         </section>

@@ -37,6 +37,11 @@ class Configuration extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->getConfig()->getFee();
     }
 
+    public function isFreeShipping()
+    {
+        return $this->getConfig()->getIsFreeShipping();
+    }
+
     protected function getConfig()
     {
         if($this->config === null){

@@ -6,6 +6,7 @@
                 <is_enabled>0</is_enabled>
                 <label>Bulk Goods Fee</label>
                 <fee>0</fee>
+                <is_free_shipping>0</is_free_shipping>
             </general>
         </bulk_goods>
     </default>

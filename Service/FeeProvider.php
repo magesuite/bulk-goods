@@ -20,6 +20,10 @@ class FeeProvider
             return 0;
         }
 
+        if($this->configuration->isFreeShipping() && $this->isFreeShippingInQuote($quote)){
+            return 0;
+        }
+
         if(!$this->isBulkGoodItemInEntity($quote)){
             return 0;
         }
@@ -33,6 +37,21 @@ class FeeProvider
             if($item->getProduct()->getData(\MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_ATTRIBUTE_CODE)){
                 return true;
             }
+        }
+
+        return false;
+    }
+
+    protected function isFreeShippingInQuote($quote)
+    {
+        $shippingAddress = $quote->getShippingAddress();
+
+        if(empty($shippingAddress)){
+            return false;
+        }
+
+        if($shippingAddress->getShippingAmount() === 0.0 || $shippingAddress->getFreeShipping()){
+            return true;
         }
 
         return false;
