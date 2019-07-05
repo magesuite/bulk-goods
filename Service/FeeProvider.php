@@ -50,7 +50,11 @@ class FeeProvider
             return false;
         }
 
-        if($shippingAddress->getShippingAmount() === 0.0 || $shippingAddress->getFreeShipping()){
+        if($shippingAddress->getFreeShipping()){
+            return true;
+        }
+
+        if($shippingAddress->getShippingMethod() && $shippingAddress->getShippingAmount()){
             return true;
         }
 

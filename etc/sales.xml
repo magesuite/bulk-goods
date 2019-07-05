@@ -4,7 +4,7 @@
     <section name="quote">
         <group name="totals">
             <item name="bulk_goods_fee" instance="MageSuite\BulkGoods\Model\Total\Quote\BulkGoods" sort_order="350" />
-            <item name="bulk_goods_tax" instance="MageSuite\BulkGoods\Model\Total\Quote\BulkGoodsTax" sort_order="360" />
+            <item name="bulk_goods_tax" instance="MageSuite\BulkGoods\Model\Total\Quote\BulkGoodsTax" sort_order="500" />
         </group>
     </section>
     <section name="order_invoice">
