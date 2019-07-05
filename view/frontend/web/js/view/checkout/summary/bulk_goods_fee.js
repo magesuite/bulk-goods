@@ -14,7 +14,7 @@ define([
             totals: quote.getTotals(),
             isTaxDisplayedInGrandTotal: window.checkoutConfig.includeTaxInGrandTotal || false,
             isDisplayed: function() {
-                return this.isFullMode();
+                return this.getValue() != 0;
             },
             getValue: function() {
                 var price = 0;
@@ -22,7 +22,7 @@ define([
                 if (this.totals()) {
                     price = totals.getSegment('bulk_goods_fee').value;
                 }
-                return this.getFormattedPrice(price);
+                return price;
             },
             getBaseValue: function() {
                 var price = 0;
@@ -30,7 +30,11 @@ define([
                 if (this.totals()) {
                     price = totals.getSegment('bulk_goods_fee').value;
                 }
-                return priceUtils.formatPrice(price, quote.getBasePriceFormat());
+                return price
+            },
+            getFormattedPrice: function () {
+                return priceUtils.formatPrice(this.getValue(), quote.getBasePriceFormat());
+
             }
         });
     }

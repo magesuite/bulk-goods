@@ -54,7 +54,7 @@ class FeeProvider
             return true;
         }
 
-        if($shippingAddress->getShippingMethod() && $shippingAddress->getShippingAmount()){
+        if($shippingAddress->getShippingMethod() && !$shippingAddress->getShippingAmount()){
             return true;
         }
 
