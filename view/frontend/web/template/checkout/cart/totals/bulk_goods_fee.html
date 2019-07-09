@@ -1,8 +1,8 @@
-<<!-- ko if: isDisplayed() -->
+<!-- ko if: isDisplayed() -->
 <tr class="totals bulk_goods_fee excl">
-    <th class="mark" colspan="1" scope="row" data-bind="i18n: getBulkGoodsTitle"></th>
+    <th class="mark" colspan="1" scope="row" data-bind="text: title"></th>
     <td class="amount">
-        <span class="price" data-bind="text: getFormattedPrice()"></span>
+        <span class="price acart" data-bind="text: getValue()"></span>
     </td>
 </tr>
 <!-- /ko -->

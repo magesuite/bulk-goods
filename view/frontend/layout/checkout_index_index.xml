@@ -13,10 +13,10 @@
                                                 <item name="totals" xsi:type="array">
                                                     <item name="children" xsi:type="array">
                                                         <item name="bulk_goods_fee" xsi:type="array">
-                                                            <item name="component"  xsi:type="string">MageSuite_BulkGoods/js/view/checkout/cart/totals/bulk_goods_fee</item>
+                                                            <item name="component"  xsi:type="string">MageSuite_BulkGoods/js/view/checkout/summary/bulk_goods_fee</item>
                                                             <item name="sortOrder" xsi:type="string">60</item>
                                                             <item name="config" xsi:type="array">
-                                                                <item name="template" xsi:type="string">MageSuite_BulkGoods/checkout/cart/totals/bulk_goods_fee</item>
+                                                                <item name="template" xsi:type="string">MageSuite_BulkGoods/checkout/summary/bulk_goods_fee</item>
                                                                 <item name="title" xsi:type="string">Bulk Goods Fee</item>
                                                             </item>
                                                         </item>

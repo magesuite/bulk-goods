@@ -52,7 +52,7 @@ class BulkGoods extends AbstractTotal
             return [
                 'code' => $this->getCode(),
                 'title' => $this->getLabel(),
-                'value' => $total->getBulkGoodsFee()
+                'value' => $total->getBulkGoodsFee() ?? $quote->getBulkGoodsFee() ?? 0
             ];
         }
 
