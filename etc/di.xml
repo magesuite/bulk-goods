@@ -1,4 +1,12 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="MageSuite\BulkGoods\Api\BulkGoodsInterface" type="MageSuite\BulkGoods\Model\BulkGoods" />
+
+    <type name="Magento\Sales\Api\OrderRepositoryInterface">
+        <plugin name="add_fee_to_order_repository" type="MageSuite\BulkGoods\Plugin\Sales\Api\OrderRepositoryInterface\AddFeeToOrderRepository" />
+    </type>
+
+    <type name="Magento\Sales\Block\Order\Totals">
+        <plugin name="add_fee_to_order_in_customer_area" type="MageSuite\BulkGoods\Plugin\Sales\Block\Order\Totals\AddFeeInCustomerArea" />
+    </type>
 </config>

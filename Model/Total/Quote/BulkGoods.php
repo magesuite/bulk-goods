@@ -35,8 +35,11 @@ class BulkGoods extends AbstractTotal
             $total->setBulkGoodsFee($amount);
             $total->setBaseBulkGoodsFee($baseAmount);
 
-            $quote->setGrandTotal($total->getGrandTotal() + $amount);
-            $quote->setBaseGrandTotal($total->getBaseGrandTotal() + $baseAmount);
+            $bulkGoodsTotal = $quote->getBulkGoodsFee();
+            $balance = $amount - $bulkGoodsTotal;
+
+            $quote->setGrandTotal($total->getGrandTotal() + $balance);
+            $quote->setBaseGrandTotal($total->getBaseGrandTotal() + $balance);
         }
 
         $quote->setBaseBulkGoodsFee($baseAmount);

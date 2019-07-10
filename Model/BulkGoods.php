@@ -37,7 +37,7 @@ class BulkGoods implements \MageSuite\BulkGoods\Api\BulkGoodsInterface
     {
         $baseAmount = $this->getBaseAmount($quote);
 
-        return $baseAmount + $this->getBaseTaxAmount($baseAmount);
+        return $baseAmount + $this->getBaseTaxAmount($quote, $baseAmount);
     }
 
     public function getBaseAmount($quote)
@@ -45,8 +45,22 @@ class BulkGoods implements \MageSuite\BulkGoods\Api\BulkGoodsInterface
         return $this->feeProvider->getFee($quote);
     }
 
-    public function getBaseTaxAmount($amount)
+    public function getBaseTaxAmount($quote, $amount = null)
     {
+        $shippingAddress = $quote->getShippingAddress();
+
+        if($shippingAddress){
+            $taxAmount = $shippingAddress->getData('tax_amount');
+
+            if(!(float)$taxAmount){
+                return 0;
+            }
+        }
+
+        if(empty($amount)){
+            $amount = $this->getBaseAmount($quote);
+        }
+
         return $this->taxCalculator->calculate($amount);
     }
 

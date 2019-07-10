@@ -17,10 +17,11 @@ interface BulkGoodsInterface
     public function getBaseAmount($quote);
 
     /**
+     * @param \Magento\Quote\Model\Quote $quote
      * @param double $amount
      * @return double
      */
-    public function getBaseTaxAmount($amount);
+    public function getBaseTaxAmount($quote, $amount);
 
     /**
      * @return string

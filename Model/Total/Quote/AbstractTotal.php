@@ -64,7 +64,7 @@ abstract class AbstractTotal extends \Magento\Quote\Model\Quote\Address\Total\Ab
     {
         $baseAmount = $this->getBaseAmount($quote);
 
-        return $this->bulkGoods->getBaseTaxAmount($baseAmount);
+        return $this->bulkGoods->getBaseTaxAmount($quote, $baseAmount);
     }
 
     protected function getConvertedAmount($baseAmount)
@@ -88,4 +88,5 @@ abstract class AbstractTotal extends \Magento\Quote\Model\Quote\Address\Total\Ab
 
         return true;
     }
+
 }
