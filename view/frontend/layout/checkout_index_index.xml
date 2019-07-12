@@ -17,7 +17,6 @@
                                                             <item name="sortOrder" xsi:type="string">60</item>
                                                             <item name="config" xsi:type="array">
                                                                 <item name="template" xsi:type="string">MageSuite_BulkGoods/checkout/summary/bulk_goods_fee</item>
-                                                                <item name="title" xsi:type="string">Bulk Goods Fee</item>
                                                             </item>
                                                         </item>
                                                     </item>

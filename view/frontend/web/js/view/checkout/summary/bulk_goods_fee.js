@@ -34,6 +34,10 @@ define(
                     price = totals.getSegment('bulk_goods_fee').value;
                 }
                 return price;
+            },
+
+            getTitle: function() {
+                return window.checkoutConfig.bulk_goods_title;
             }
         });
     }
