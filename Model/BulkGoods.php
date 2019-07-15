@@ -50,9 +50,9 @@ class BulkGoods implements \MageSuite\BulkGoods\Api\BulkGoodsInterface
         $shippingAddress = $quote->getShippingAddress();
 
         if($shippingAddress){
-            $taxAmount = $shippingAddress->getData('tax_amount');
+            $appliedTaxes = $shippingAddress->getAppliedTaxes();
 
-            if(!(float)$taxAmount){
+            if(empty($appliedTaxes)){
                 return 0;
             }
         }
