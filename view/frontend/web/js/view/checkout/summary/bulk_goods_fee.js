@@ -22,7 +22,7 @@ define(
 
             getValue: function() {
                 var price = 0;
-                if (this.totals()) {
+                if (this.totals() && totals.getSegment('bulk_goods_fee')) {
                     price = totals.getSegment('bulk_goods_fee').value;
                 }
                 return this.getFormattedPrice(price);
@@ -30,7 +30,7 @@ define(
 
             getPureValue: function() {
                 var price = 0;
-                if (this.totals()) {
+                if (this.totals() && totals.getSegment('bulk_goods_fee')) {
                     price = totals.getSegment('bulk_goods_fee').value;
                 }
                 return price;
