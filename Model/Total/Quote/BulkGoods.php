@@ -55,7 +55,7 @@ class BulkGoods extends AbstractTotal
             return [
                 'code' => $this->getCode(),
                 'title' => $this->getLabel(),
-                'value' => $total->getBulkGoodsFee() ?? $quote->getBulkGoodsFee() ?? 0
+                'value' => $this->configuration->getSubtotalDisplayType() == \Magento\Tax\Model\Config::DISPLAY_TYPE_INCLUDING_TAX ? $this->getBaseAmountWithTax($quote) : $this->getBaseAmount($quote)
             ];
         }
 

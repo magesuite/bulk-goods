@@ -5,6 +5,7 @@ namespace MageSuite\BulkGoods\Helper;
 class Configuration extends \Magento\Framework\App\Helper\AbstractHelper
 {
     const XML_PATH_BULK_GOODS_CONFIGURATION = 'bulk_goods/general';
+    const XML_PATH_SUBTOTAL_DISPLAY_TYPE = 'tax/cart_display/subtotal';
 
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
@@ -40,6 +41,11 @@ class Configuration extends \Magento\Framework\App\Helper\AbstractHelper
     public function isFreeShipping()
     {
         return $this->getConfig()->getIsFreeShipping();
+    }
+
+    public function getSubtotalDisplayType()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_SUBTOTAL_DISPLAY_TYPE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
     protected function getConfig()
