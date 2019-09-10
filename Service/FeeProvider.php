@@ -50,7 +50,7 @@ class FeeProvider
             return false;
         }
 
-        if($shippingAddress->getShippingMethod() && !$shippingAddress->getShippingAmount()){
+        if($shippingAddress->getShippingMethod() && !(float)$shippingAddress->getShippingAmount()){
             return true;
         }
 
