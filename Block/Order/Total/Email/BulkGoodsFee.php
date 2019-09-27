@@ -25,14 +25,16 @@ class BulkGoodsFee extends \Magento\Framework\View\Element\AbstractBlock
 
     public function initTotals()
     {
-        if(!(float)$this->getSource()->getBulkGoodsFee()) {
+        $fee = $this->getSource()->getBulkGoodsFee();
+
+        if (!(float)$fee) {
             return $this;
         }
 
         $total = new \Magento\Framework\DataObject(
             [
                 'code' => \MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_FEE_CODE,
-                'value' => $this->getSource()->getBulkGoodsFee(),
+                'value' => $this->configuration->getSubtotalDisplayType() == \Magento\Tax\Model\Config::DISPLAY_TYPE_INCLUDING_TAX ? $fee : $this->configuration->getFee(),
                 'label' => $this->configuration->getLabel(),
             ]
         );
