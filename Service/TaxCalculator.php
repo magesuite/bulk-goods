@@ -24,14 +24,12 @@ class TaxCalculator
      */
     protected $taxCalculation;
 
-
-
     public function __construct(
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Tax\Model\Config $taxConfig,
         \Magento\Tax\Api\TaxCalculationInterface $taxRateCalculation,
         \Magento\Tax\Model\Calculation $taxCalculation
-    ){
+    ) {
         $this->storeManager = $storeManager;
         $this->taxConfig = $taxConfig;
         $this->taxRateCalculation = $taxRateCalculation;
@@ -41,12 +39,17 @@ class TaxCalculator
     public function calculate($amount)
     {
         $store = $this->storeManager->getStore();
-        $shippingTaxId = $this->taxConfig->getShippingTaxClass($store);
+        $shippingTaxClassId = $this->getShippingTaxClassId();
         $isTaxIncluded = $this->taxConfig->shippingPriceIncludesTax($store);
 
-        $taxRate = $this->taxRateCalculation->getCalculatedRate($shippingTaxId, null, $store->getId());
+        $taxRate = $this->taxRateCalculation->getCalculatedRate($shippingTaxClassId, null, $store->getId());
         $tax = $this->taxCalculation->calcTaxAmount($amount, $taxRate, $isTaxIncluded);
 
         return $tax;
+    }
+
+    public function getShippingTaxClassId()
+    {
+        return $this->taxConfig->getShippingTaxClass();
     }
 }

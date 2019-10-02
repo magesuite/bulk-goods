@@ -27,4 +27,9 @@ interface BulkGoodsInterface
      * @return string
      */
     public function getLabel();
+
+    /**
+     * @return int
+     */
+    public function getShippingTaxClassId();
 }

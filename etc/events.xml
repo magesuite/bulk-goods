@@ -1,8 +1,5 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
-    <event name="sales_quote_address_collect_totals_after">
-        <observer name="bulk_goods_update_tax_total" instance="MageSuite\BulkGoods\Observer\UpdateTaxTotal" />
-    </event>
 
     <event name="payment_cart_collect_items_and_amounts">
         <observer name="add_bulk_goods_custom_item" instance="MageSuite\BulkGoods\Observer\AddFeeAsCustomItem" />

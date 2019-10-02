@@ -49,15 +49,15 @@ class BulkGoods implements \MageSuite\BulkGoods\Api\BulkGoodsInterface
     {
         $shippingAddress = $quote->getShippingAddress();
 
-        if($shippingAddress){
+        if ($shippingAddress) {
             $appliedTaxes = $shippingAddress->getAppliedTaxes();
 
-            if(empty($appliedTaxes)){
+            if (empty($appliedTaxes)) {
                 return 0;
             }
         }
 
-        if(empty($amount)){
+        if (empty($amount)) {
             $amount = $this->getBaseAmount($quote);
         }
 
@@ -67,5 +67,10 @@ class BulkGoods implements \MageSuite\BulkGoods\Api\BulkGoodsInterface
     public function getLabel()
     {
         return $this->configuration->getLabel();
+    }
+
+    public function getShippingTaxClassId()
+    {
+        return $this->taxCalculator->getShippingTaxClassId();
     }
 }

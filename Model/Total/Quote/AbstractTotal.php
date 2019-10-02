@@ -82,10 +82,6 @@ abstract class AbstractTotal extends \Magento\Quote\Model\Quote\Address\Total\Ab
             return false;
         }
 
-        if($this->request->getControllerName() == self::PAYPAL_METHOD_CODE && in_array($this->request->getActionName(), $this->paypalActionNames)){
-            return false;
-        }
-
         return true;
     }
 
