@@ -10,10 +10,8 @@ class BulkGoods extends AbstractTotal
 
         $invoice->setBulkGoodsFee($order->getBulkGoodsFee());
 
-        if ($this->canApplyTotal($order)) {
-            $invoice->setGrandTotal($invoice->getGrandTotal() + $invoice->getBulkGoodsFee());
-            $invoice->setBaseGrandTotal($invoice->getBaseGrandTotal() + $invoice->getBulkGoodsFee());
-        }
+        $invoice->setGrandTotal($invoice->getGrandTotal() + $invoice->getBulkGoodsFee());
+        $invoice->setBaseGrandTotal($invoice->getBaseGrandTotal() + $invoice->getBulkGoodsFee());
 
         return $this;
     }
