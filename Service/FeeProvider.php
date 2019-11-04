@@ -16,15 +16,15 @@ class FeeProvider
 
     public function getFee(\Magento\Quote\Model\Quote $quote)
     {
-        if(!$this->configuration->isEnabled()){
+        if (!$this->configuration->isEnabled()) {
             return 0;
         }
 
-        if($this->configuration->isFreeShipping() && $this->isFreeShippingInQuote($quote)){
+        if ($this->configuration->isFreeShipping() && $this->isFreeShippingInQuote($quote)) {
             return 0;
         }
 
-        if(!$this->isBulkGoodItemInEntity($quote)){
+        if (!$this->isBulkGoodItemInEntity($quote)) {
             return 0;
         }
 
@@ -33,8 +33,8 @@ class FeeProvider
 
     protected function isBulkGoodItemInEntity($quote)
     {
-        foreach ($quote->getAllVisibleItems() as $item) {
-            if($item->getProduct()->getData(\MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_ATTRIBUTE_CODE)){
+        foreach ($quote->getAllItems() as $item) {
+            if ($item->getProduct()->getData(\MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_ATTRIBUTE_CODE)) {
                 return true;
             }
         }
@@ -46,11 +46,11 @@ class FeeProvider
     {
         $shippingAddress = $quote->getShippingAddress();
 
-        if(empty($shippingAddress)){
+        if (empty($shippingAddress)) {
             return false;
         }
 
-        if($shippingAddress->getShippingMethod() && !(float)$shippingAddress->getShippingAmount()){
+        if ($shippingAddress->getShippingMethod() && !(float)$shippingAddress->getShippingAmount()) {
             return true;
         }
 
