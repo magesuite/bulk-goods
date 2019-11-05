@@ -33,7 +33,7 @@ class FeeProvider
 
     protected function isBulkGoodItemInEntity($quote)
     {
-        foreach ($quote->getAllItems() as $item) {
+        foreach ($quote->getAllVisibleItems() as $item) {
             if ($item->getProduct()->getData(\MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_ATTRIBUTE_CODE)) {
                 return true;
             }
