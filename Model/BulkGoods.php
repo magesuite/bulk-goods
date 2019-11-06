@@ -33,11 +33,11 @@ class BulkGoods implements \MageSuite\BulkGoods\Api\BulkGoodsInterface
         $this->taxCalculator = $taxCalculator;
     }
 
-    public function getBaseAmountWithTax($quote)
+    public function getBaseAmountWithTax($quote, $force = false)
     {
         $baseAmount = $this->getBaseAmount($quote);
 
-        return $baseAmount + $this->getBaseTaxAmount($quote, $baseAmount);
+        return $baseAmount + $this->getBaseTaxAmount($quote, $baseAmount, $force);
     }
 
     public function getBaseAmount($quote)
@@ -45,11 +45,11 @@ class BulkGoods implements \MageSuite\BulkGoods\Api\BulkGoodsInterface
         return $this->feeProvider->getFee($quote);
     }
 
-    public function getBaseTaxAmount($quote, $amount = null)
+    public function getBaseTaxAmount($quote, $amount = null, $force = false)
     {
         $shippingAddress = $quote->getShippingAddress();
 
-        if ($shippingAddress) {
+        if (!$force && $shippingAddress) {
             $appliedTaxes = $shippingAddress->getAppliedTaxes();
 
             if (empty($appliedTaxes)) {

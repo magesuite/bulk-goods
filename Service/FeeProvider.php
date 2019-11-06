@@ -14,7 +14,7 @@ class FeeProvider
         $this->configuration = $configuration;
     }
 
-    public function getFee(\Magento\Quote\Model\Quote $quote)
+    public function getFee($quote)
     {
         if (!$this->configuration->isEnabled()) {
             return 0;

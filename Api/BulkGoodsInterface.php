@@ -6,9 +6,10 @@ interface BulkGoodsInterface
 {
     /**
      * @param \Magento\Quote\Model\Quote $quote
+     * @param bool $force
      * @return double
      */
-    public function getBaseAmountWithTax($quote);
+    public function getBaseAmountWithTax($quote, $force);
 
     /**
      * @param \Magento\Quote\Model\Quote $quote
@@ -19,9 +20,10 @@ interface BulkGoodsInterface
     /**
      * @param \Magento\Quote\Model\Quote $quote
      * @param double $amount
+     * @param bool $force
      * @return double
      */
-    public function getBaseTaxAmount($quote, $amount);
+    public function getBaseTaxAmount($quote, $amount, $force);
 
     /**
      * @return string

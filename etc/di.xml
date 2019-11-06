@@ -9,4 +9,8 @@
     <type name="Magento\Sales\Block\Order\Totals">
         <plugin name="add_fee_to_order_in_customer_area" type="MageSuite\BulkGoods\Plugin\Sales\Block\Order\Totals\AddFeeInCustomerArea" />
     </type>
+
+    <type name="Payone\Core\Model\Api\Invoice">
+        <plugin name="payone_add_bulk_goods_fee" type="MageSuite\BulkGoods\Plugin\Payone\Core\Model\Api\Invoice\AddBulkGoodsFee" />
+    </type>
 </config>
