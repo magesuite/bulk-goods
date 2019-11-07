@@ -41,6 +41,10 @@ class AddBulkGoodsFee
             return [$oRequest, $oOrder, $aPositions, $blDebit];
         }
 
+        if ($this->configuration->isFreeShipping() && !(float)$oOrder->getShippingAmount()) {
+            return [$oRequest, $oOrder, $aPositions, $blDebit];
+        }
+
         $fee = (float)$oOrder->getTaxAmount() ? $this->bulkGoods->getBaseAmountWithTax($oOrder, true) : $this->bulkGoods->getBaseAmount($oOrder);
 
         if (!(float)$fee) {
