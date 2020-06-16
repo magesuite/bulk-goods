@@ -75,7 +75,7 @@ class BulkGoods implements \MageSuite\BulkGoods\Api\BulkGoodsInterface
                 null,
                 $quote->getStoreId()
             );
-            $fee = $fee / ((100+$taxRate) / 100);
+            $fee = $fee / ((100 + $taxRate) / 100);
         }
 
         return $this->priceCurrency->round($fee);
