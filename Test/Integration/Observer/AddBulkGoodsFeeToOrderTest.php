@@ -97,10 +97,10 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
         $this->taxRuleFactory = $this->objectManager->create(\Magento\Tax\Api\Data\TaxRuleInterfaceFactory::class);
         $this->taxRuleRepository = $this->objectManager->create(\Magento\Tax\Api\TaxRuleRepositoryInterface::class);
 
-        $this->_generateTaxRate();
+        $this->generateTaxRate();
     }
 
-    private function _generateTaxRate()
+    protected function generateTaxRate()
     {
         $taxData = [
             'tax_country_id' => 'DE',
@@ -143,6 +143,7 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
      */
     public function testItDoesntAddBulkGoodsFee()
     {
+        $expectedFee = 0;
         $qty = 1;
         $product = $this->productRepository->get('product');
 
@@ -151,7 +152,7 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
 
         $order = $this->orderRepository->get($orderId);
 
-        $this->assertEquals(0, $order->getBulkGoodsFee());
+        $this->assertEquals($expectedFee, $order->getBulkGoodsFee());
     }
 
     /**
@@ -165,6 +166,7 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
      */
     public function testItAddsBulkGoodsFeeInclTaxCorrectlyToOrder()
     {
+        $expectedFee = 10;
         $qty = 1;
         $product = $this->productRepository->get('product');
 
@@ -173,7 +175,7 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
 
         $order = $this->orderRepository->get($orderId);
 
-        $this->assertEquals(10, $order->getBulkGoodsFee());
+        $this->assertEquals($expectedFee, $order->getBulkGoodsFee());
     }
 
     /**
@@ -192,6 +194,7 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
      */
     public function testItAddsBulkGoodsFeeExclTaxCorrectlyToOrder()
     {
+        $expectedFee = 11.9;
         $qty = 1;
         $product = $this->productRepository->get('product');
 
@@ -200,7 +203,7 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
 
         $order = $this->orderRepository->get($orderId);
 
-        $this->assertEquals(11.9, $order->getBulkGoodsFee());
+        $this->assertEquals($expectedFee, $order->getBulkGoodsFee());
     }
 
     private function prepareQuote($product, $qty)
