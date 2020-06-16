@@ -23,14 +23,35 @@ class BulkGoods implements \MageSuite\BulkGoods\Api\BulkGoodsInterface
      */
     protected $taxCalculator;
 
+    /**
+     * @var \Magento\Tax\Model\Config
+     */
+    protected $taxConfig;
+
+    /**
+     * @var \Magento\Tax\Api\TaxCalculationInterface
+     */
+    protected $taxRateCalculation;
+
+    /**
+     * @var \Magento\Framework\Pricing\PriceCurrencyInterface
+     */
+    protected $priceCurrency;
+
     public function __construct(
         \MageSuite\BulkGoods\Service\FeeProvider $feeProvider,
         \MageSuite\BulkGoods\Helper\Configuration $configuration,
-        \MageSuite\BulkGoods\Service\TaxCalculator $taxCalculator
+        \MageSuite\BulkGoods\Service\TaxCalculator $taxCalculator,
+        \Magento\Tax\Model\Config $taxConfig,
+        \Magento\Tax\Api\TaxCalculationInterface $taxRateCalculation,
+        \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
     ) {
         $this->feeProvider = $feeProvider;
         $this->configuration = $configuration;
         $this->taxCalculator = $taxCalculator;
+        $this->taxConfig = $taxConfig;
+        $this->taxRateCalculation = $taxRateCalculation;
+        $this->priceCurrency = $priceCurrency;
     }
 
     public function getBaseAmountWithTax($quote, $force = false)
@@ -42,7 +63,22 @@ class BulkGoods implements \MageSuite\BulkGoods\Api\BulkGoodsInterface
 
     public function getBaseAmount($quote)
     {
-        return $this->feeProvider->getFee($quote);
+        $fee = $this->feeProvider->getFee($quote);
+
+        if (!$fee) {
+            return 0;
+        }
+
+        if ($this->taxConfig->shippingPriceIncludesTax($quote->getStore())) {
+            $taxRate = $this->taxRateCalculation->getCalculatedRate(
+                $this->taxConfig->getShippingTaxClass(),
+                null,
+                $quote->getStoreId()
+            );
+            $fee = $fee / ((100+$taxRate) / 100);
+        }
+
+        return $this->priceCurrency->round($fee);
     }
 
     public function getBaseTaxAmount($quote, $amount = null, $force = false)

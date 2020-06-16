@@ -40,10 +40,9 @@ class TaxCalculator
     {
         $store = $this->storeManager->getStore();
         $shippingTaxClassId = $this->getShippingTaxClassId();
-        $isTaxIncluded = $this->taxConfig->shippingPriceIncludesTax($store);
 
         $taxRate = $this->taxRateCalculation->getCalculatedRate($shippingTaxClassId, null, $store->getId());
-        $tax = $this->taxCalculation->calcTaxAmount($amount, $taxRate, $isTaxIncluded);
+        $tax = $this->taxCalculation->calcTaxAmount($amount, $taxRate);
 
         return $tax;
     }

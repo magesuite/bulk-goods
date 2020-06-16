@@ -9,8 +9,9 @@ class FeeProvider
      */
     protected $configuration;
 
-    public function __construct(\MageSuite\BulkGoods\Helper\Configuration $configuration)
-    {
+    public function __construct(
+        \MageSuite\BulkGoods\Helper\Configuration $configuration
+    ){
         $this->configuration = $configuration;
     }
 
