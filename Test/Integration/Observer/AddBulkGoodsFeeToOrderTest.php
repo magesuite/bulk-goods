@@ -7,10 +7,6 @@ namespace MageSuite\BulkGoods\Test\Integration\Observer;
  */
 class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
 {
-    const DEFAULT_CUSTOMER_TAX_CLASS_ID = 3;
-
-    const DEFAULT_PRODUCT_TAX_CLASS_ID = 2;
-
     /**
      * @var \Magento\TestFramework\ObjectManager
      */
@@ -56,31 +52,6 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
      */
     protected $orderRepository;
 
-    /**
-     * @var \Magento\Tax\Api\TaxRateRepositoryInterface
-     */
-    protected $rateRepository;
-
-    /**
-     * @var \Magento\Tax\Api\Data\TaxRateInterfaceFactory
-     */
-    protected $taxRateFactory;
-
-    /**
-     * @var \Magento\Framework\Api\DataObjectHelper
-     */
-    protected $dataObjectHelper;
-
-    /**
-     * @var \Magento\Tax\Api\Data\TaxRuleInterfaceFactory
-     */
-    protected $taxRuleFactory;
-
-    /**
-     * @var \Magento\Tax\Api\TaxRuleRepositoryInterface
-     */
-    protected $taxRuleRepository;
-
     public function setUp()
     {
         $this->objectManager = \Magento\TestFramework\ObjectManager::getInstance();
@@ -91,41 +62,11 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
         $this->productRepository = $this->objectManager->get(\Magento\Catalog\Api\ProductRepositoryInterface::class);
         $this->bulkGoods = $this->objectManager->get(\MageSuite\BulkGoods\Model\BulkGoods::class);
         $this->orderRepository = $this->objectManager->get(\Magento\Sales\Api\OrderRepositoryInterface::class);
-        $this->rateRepository = $this->objectManager->get(\Magento\Tax\Api\TaxRateRepositoryInterface::class);
-        $this->taxRateFactory = $this->objectManager->create(\Magento\Tax\Api\Data\TaxRateInterfaceFactory::class);
-        $this->dataObjectHelper = $this->objectManager->create(\Magento\Framework\Api\DataObjectHelper::class);
-        $this->taxRuleFactory = $this->objectManager->create(\Magento\Tax\Api\Data\TaxRuleInterfaceFactory::class);
-        $this->taxRuleRepository = $this->objectManager->create(\Magento\Tax\Api\TaxRuleRepositoryInterface::class);
-
-        $this->generateTaxRate();
     }
 
-    protected function generateTaxRate()
+    public static function loadTaxRates()
     {
-        $taxData = [
-            'tax_country_id' => 'DE',
-            'tax_region_id' => 0,
-            'tax_postcode' => '*',
-            'rate' => '19.0000',
-            'code' => 'DE VAT Rate',
-            'zip_is_range' => null,
-            'zip_from' => null,
-            'zip_to' => null
-        ];
-
-        $taxRate = $this->taxRateFactory->create();
-        $this->dataObjectHelper->populateWithArray($taxRate, $taxData, \Magento\Tax\Api\Data\TaxRateInterface::class);
-        $taxRateData = $this->rateRepository->save($taxRate);
-
-        $taxRuleDataObject = $this->taxRuleFactory->create();
-        $taxRuleDataObject->setCode('test')
-            ->setTaxRateIds([$taxRateData->getId()])
-            ->setCustomerTaxClassIds([self::DEFAULT_CUSTOMER_TAX_CLASS_ID])
-            ->setProductTaxClassIds([self::DEFAULT_PRODUCT_TAX_CLASS_ID])
-            ->setPriority(0)
-            ->setPosition(0);
-
-        $this->taxRuleRepository->save($taxRuleDataObject);
+        require __DIR__ . '/../_files/tax_rates.php';
     }
 
     public static function loadProducts()
@@ -191,6 +132,7 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
      * @magentoAppIsolation enabled
      * @magentoDbIsolation enabled
      * @magentoDataFixture loadProducts
+     * @magentoDataFixture loadTaxRates
      */
     public function testItAddsBulkGoodsFeeExclTaxCorrectlyToOrder()
     {
