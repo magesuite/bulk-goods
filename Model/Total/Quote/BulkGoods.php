@@ -24,8 +24,10 @@ class BulkGoods extends AbstractTotal
             return $this;
         }
 
-        $baseAmount = $this->getBaseAmountWithTax($quote);
+        $baseAmount = $this->getBaseAmount($quote);
         $amount = $this->getConvertedAmount($baseAmount);
+        $baseAmountWithTax = $this->getBaseAmountWithTax($quote);
+        $amountWithTax = $this->getConvertedAmount($baseAmountWithTax);
 
         $total->setBaseTotalAmount(\MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_FEE_CODE, $amount);
         $total->setTotalAmount(\MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_FEE_CODE, $baseAmount);
@@ -33,8 +35,8 @@ class BulkGoods extends AbstractTotal
         $total->setBaseBulkGoodsFee($baseAmount);
         $total->setBulkGoodsFee($amount);
 
-        $quote->setBaseBulkGoodsFee($baseAmount);
-        $quote->setBulkGoodsFee($amount);
+        $quote->setBaseBulkGoodsFee($baseAmountWithTax);
+        $quote->setBulkGoodsFee($amountWithTax);
 
         $taxableQuoteAssociate = [
             \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector::KEY_ASSOCIATED_TAXABLE_TYPE => \MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_FEE_CODE,
@@ -43,7 +45,7 @@ class BulkGoods extends AbstractTotal
             \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector::KEY_ASSOCIATED_TAXABLE_BASE_UNIT_PRICE => $baseAmount,
             \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector::KEY_ASSOCIATED_TAXABLE_QUANTITY => 1,
             \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector::KEY_ASSOCIATED_TAXABLE_TAX_CLASS_ID => $this->bulkGoods->getShippingTaxClassId(),
-            \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector::KEY_ASSOCIATED_TAXABLE_PRICE_INCLUDES_TAX => 1,
+            \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector::KEY_ASSOCIATED_TAXABLE_PRICE_INCLUDES_TAX => 0,
             \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector::KEY_ASSOCIATED_TAXABLE_ASSOCIATION_ITEM_CODE => \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector::ASSOCIATION_ITEM_CODE_FOR_QUOTE
         ];
 
@@ -61,7 +63,8 @@ class BulkGoods extends AbstractTotal
             return [
                 'code' => $this->getCode(),
                 'title' => $this->getLabel(),
-                'value' => $this->configuration->getSubtotalDisplayType() == \Magento\Tax\Model\Config::DISPLAY_TYPE_INCLUDING_TAX ? $this->getBaseAmountWithTax($quote) : $this->getBaseAmount($quote)
+                'value' => $this->configuration->getSubtotalDisplayType() == \Magento\Tax\Model\Config::DISPLAY_TYPE_INCLUDING_TAX ?
+                    $this->getBaseAmountWithTax($quote) : $this->getBaseAmount($quote)
             ];
         }
 
