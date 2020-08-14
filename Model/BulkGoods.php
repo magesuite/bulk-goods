@@ -109,4 +109,14 @@ class BulkGoods implements \MageSuite\BulkGoods\Api\BulkGoodsInterface
     {
         return $this->taxCalculator->getShippingTaxClassId();
     }
+
+    public function getInvoiceSku()
+    {
+        return self::BULK_GOODS_FEE_CODE;
+    }
+
+    public function getInvoiceName()
+    {
+        return self::BULK_GOODS_FEE_CODE;
+    }
 }

@@ -1,17 +1,13 @@
 <?php
+
 namespace MageSuite\BulkGoods\Plugin\Payone\Core\Model\Api\Invoice;
 
 class AddBulkGoodsFee
 {
     /**
-     * @var \MageSuite\BulkGoods\Model\BulkGoods
+     * @var \Magento\Store\Model\StoreManagerInterface
      */
-    protected $bulkGoods;
-
-    /**
-     * @var \MageSuite\BulkGoods\Helper\Configuration
-     */
-    protected $configuration;
+    protected $storeManager;
 
     /**
      * @var \Magento\Sales\Model\Order\ItemFactory
@@ -19,20 +15,25 @@ class AddBulkGoodsFee
     protected $orderItemFactory;
 
     /**
-     * @var \Magento\Store\Model\StoreManagerInterface
+     * @var \MageSuite\BulkGoods\Helper\Configuration
      */
-    protected $storeManager;
+    protected $configuration;
+
+    /**
+     * @var \MageSuite\BulkGoods\Model\BulkGoods
+     */
+    protected $bulkGoods;
 
     public function __construct(
-        \MageSuite\BulkGoods\Model\BulkGoods $bulkGoods,
-        \MageSuite\BulkGoods\Helper\Configuration $configuration,
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Sales\Model\Order\ItemFactory $orderItemFactory,
-        \Magento\Store\Model\StoreManagerInterface $storeManager
+        \MageSuite\BulkGoods\Helper\Configuration $configuration,
+        \MageSuite\BulkGoods\Model\BulkGoods $bulkGoods
     ) {
-        $this->bulkGoods = $bulkGoods;
-        $this->configuration = $configuration;
-        $this->orderItemFactory = $orderItemFactory;
         $this->storeManager = $storeManager;
+        $this->orderItemFactory = $orderItemFactory;
+        $this->configuration = $configuration;
+        $this->bulkGoods = $bulkGoods;
     }
 
     public function beforeAddProductInfo(\Payone\Core\Model\Api\Invoice $subject, \Payone\Core\Model\Api\Request\Base $oRequest, \Magento\Sales\Model\Order $oOrder, $aPositions = false, $blDebit = false)
@@ -63,8 +64,8 @@ class AddBulkGoodsFee
         $orderItem->setData([
             'store_id' => $this->storeManager->getStore()->getId(),
             'is_virtual' => false,
-            'sku' => \MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_FEE_CODE,
-            'name' => \MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_FEE_CODE,
+            'sku' => $this->bulkGoods->getInvoiceSku(),
+            'name' => $this->bulkGoods->getInvoiceName(),
             'qty' => 1,
             'price' => $fee,
             'base_price' => $fee,
