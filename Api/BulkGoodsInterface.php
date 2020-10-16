@@ -34,4 +34,10 @@ interface BulkGoodsInterface
      * @return int
      */
     public function getShippingTaxClassId();
+
+    /**
+     * @param \Magento\Sales\Model\Order $order
+     * @return float
+     */
+    public function getOrderFeeExclTax(\Magento\Sales\Model\Order $order);
 }
