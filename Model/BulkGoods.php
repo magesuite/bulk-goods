@@ -69,21 +69,19 @@ class BulkGoods implements \MageSuite\BulkGoods\Api\BulkGoodsInterface
             return 0;
         }
 
-        $fee = $this->getFeeAmountExclTax($fee, $quote->getStoreId());
+        if ($this->taxConfig->shippingPriceIncludesTax($quote->getStoreId())) {
+            $fee = $this->getFeeAmountExclTax($fee, $quote->getStoreId());
+        }
 
         return $this->priceCurrency->round($fee);
     }
 
-    protected function getFeeAmountExclTax($fee, $store)
+    protected function getFeeAmountExclTax($fee, $storeId)
     {
-        if (!$this->taxConfig->shippingPriceIncludesTax($store)) {
-            return $fee;
-        }
-
         $taxRate = $this->taxRateCalculation->getCalculatedRate(
             $this->taxConfig->getShippingTaxClass(),
             null,
-            $store->getId()
+            $storeId
         );
         $fee = $fee / ((100 + $taxRate) / 100);
 
@@ -94,7 +92,7 @@ class BulkGoods implements \MageSuite\BulkGoods\Api\BulkGoodsInterface
     {
         $fee = $order->getBulkGoodsFee();
 
-        return $this->getFeeAmountExclTax($fee, $order->getStore());
+        return $this->getFeeAmountExclTax($fee, $order->getStoreId());
     }
 
     public function getBaseTaxAmount($quote, $amount = null, $force = false)
