@@ -1,11 +1,11 @@
 <?php
-namespace MageSuite\BulkGoods\Test\Integration\Observer;
+namespace MageSuite\BulkGoods\Test\Integration\Model;
 
 /**
  * @magentoDbIsolation enabled
  * @magentoAppIsolation enabled
  */
-class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
+class BulkGoodsTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var \Magento\TestFramework\ObjectManager
@@ -43,7 +43,7 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
     protected $productRepository;
 
     /**
-     * @var \MageSuite\BulkGoods\Model\BulkGoods
+     * @var MageSuite\BulkGoods\Api\BulkGoodsInterface
      */
     protected $bulkGoods;
 
@@ -55,72 +55,40 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
     public function setUp(): void
     {
         $this->objectManager = \Magento\TestFramework\ObjectManager::getInstance();
-
         $this->storeManager = $this->objectManager->get(\Magento\Store\Model\StoreManagerInterface::class);
         $this->cartManagement = $this->objectManager->get(\Magento\Quote\Api\CartManagementInterface::class);
         $this->cartRepository = $this->objectManager->get(\Magento\Quote\Api\CartRepositoryInterface::class);
         $this->productRepository = $this->objectManager->get(\Magento\Catalog\Api\ProductRepositoryInterface::class);
-        $this->bulkGoods = $this->objectManager->get(\MageSuite\BulkGoods\Model\BulkGoods::class);
+        $this->bulkGoods = $this->objectManager->get(\MageSuite\BulkGoods\Api\BulkGoodsInterface::class);
         $this->orderRepository = $this->objectManager->get(\Magento\Sales\Api\OrderRepositoryInterface::class);
-    }
-
-    public static function loadTaxRates()
-    {
-        require __DIR__ . '/../_files/tax_rates.php';
-    }
-
-    public static function loadProducts()
-    {
-        require __DIR__ . '/../_files/products.php';
-    }
-
-    /**
-     * @magentoConfigFixture default_store bulk_goods/general/is_enabled 0
-     * @magentoConfigFixture default_store bulk_goods/general/fee 10
-     * @magentoAppArea frontend
-     * @magentoAppIsolation enabled
-     * @magentoDbIsolation enabled
-     * @magentoDataFixture loadProducts
-     */
-    public function testItDoesntAddBulkGoodsFee()
-    {
-        $expectedFee = 0;
-        $qty = 1;
-        $product = $this->productRepository->get('product');
-
-        $quote = $this->prepareQuote($product, $qty);
-        $orderId = $this->cartManagement->placeOrder($quote->getId());
-
-        $order = $this->orderRepository->get($orderId);
-
-        $this->assertEquals($expectedFee, $order->getBulkGoodsFee());
     }
 
     /**
      * @magentoConfigFixture default_store bulk_goods/general/is_enabled 1
      * @magentoConfigFixture default_store bulk_goods/general/fee 10
      * @magentoConfigFixture default_store tax/calculation/shipping_includes_tax 1
+     * @magentoConfigFixture default_store tax/classes/shipping_tax_class 2
+     * @magentoConfigFixture default_store tax/defaults/country DE
+     * @magentoConfigFixture default_store shipping/origin/country_id DE
+     * @magentoConfigFixture default_store shipping/origin/region_id 81
+     * @magentoConfigFixture default_store shipping/origin/postcode 90034
      * @magentoAppArea frontend
      * @magentoAppIsolation enabled
      * @magentoDbIsolation enabled
      * @magentoDataFixture loadProducts
+     * @magentoDataFixture loadTaxRates
      */
     public function testItAddsBulkGoodsFeeInclTaxCorrectlyToOrder()
     {
-        $expectedFee = 10;
+        $expectedFee = 8.4;
         $qty = 1;
         $product = $this->productRepository->get('product');
         $quote = $this->prepareQuote($product, $qty);
-        $totals = $quote->getTotals();
-
-        $this->assertEquals(10, $totals['subtotal']->getValue());
-        $this->assertEquals(10, $totals['bulk_goods_fee']->getValue());
-        $this->assertEquals(0, $totals['tax']->getValue());
-        $this->assertEquals(20, $totals['grand_total']->getValue());
-
         $orderId = $this->cartManagement->placeOrder($quote->getId());
         $order = $this->orderRepository->get($orderId);
-        $this->assertEquals($expectedFee, $order->getBulkGoodsFee());
+        $bulkGoodsFee = $this->bulkGoods->getOrderFeeExclTax($order);
+
+        $this->assertEquals($expectedFee, $bulkGoodsFee);
     }
 
     /**
@@ -140,20 +108,15 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
      */
     public function testItAddsBulkGoodsFeeExclTaxCorrectlyToOrder()
     {
-        $expectedFee = 11.9;
+        $expectedFee = 10;
         $qty = 1;
         $product = $this->productRepository->get('product');
         $quote = $this->prepareQuote($product, $qty);
-        $totals = $quote->getTotals();
-
-        $this->assertEquals(10, $totals['subtotal']->getValue());
-        $this->assertEquals(10, $totals['bulk_goods_fee']->getValue());
-        $this->assertEquals(1.9, $totals['tax']->getValue());
-        $this->assertEquals(21.9, $totals['grand_total']->getValue());
-
         $orderId = $this->cartManagement->placeOrder($quote->getId());
         $order = $this->orderRepository->get($orderId);
-        $this->assertEquals($expectedFee, $order->getBulkGoodsFee());
+        $bulkGoodsFee = $this->bulkGoods->getOrderFeeExclTax($order);
+
+        $this->assertEquals($expectedFee, $bulkGoodsFee);
     }
 
     private function prepareQuote($product, $qty)
@@ -196,22 +159,26 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
         $rate->setCode($shippingMethod);
 
         $quote->getPayment()->importData(['method' => 'checkmo']);
-
         $quote->setBillingAddress($billingAddress);
         $quote->setShippingAddress($shippingAddress);
         $quote->getShippingAddress()->addShippingRate($rate);
         $quote->getShippingAddress()->setShippingMethod($shippingMethod);
-
-
         $quote->setPaymentMethod('checkmo');
         $quote->setInventoryProcessed(false);
-
         $quote->save();
-
         $quote->collectTotals();
-
         $quote->setData(\MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_FEE_CODE, $this->bulkGoods->getBaseAmountWithTax($quote));
 
         return $quote;
+    }
+
+    public static function loadTaxRates()
+    {
+        require __DIR__ . '/../_files/tax_rates.php';
+    }
+
+    public static function loadProducts()
+    {
+        require __DIR__ . '/../_files/products.php';
     }
 }

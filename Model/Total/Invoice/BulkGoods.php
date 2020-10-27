@@ -7,11 +7,12 @@ class BulkGoods extends AbstractTotal
     public function collect(\Magento\Sales\Model\Order\Invoice $invoice)
     {
         $order = $invoice->getOrder();
+        $fee = $order->getBulkGoodsFee();
+        $feeExclTax = $this->bulkGoods->getOrderFeeExclTax($order);
 
-        $invoice->setBulkGoodsFee($order->getBulkGoodsFee());
-
-        $invoice->setGrandTotal($invoice->getGrandTotal() + $invoice->getBulkGoodsFee());
-        $invoice->setBaseGrandTotal($invoice->getBaseGrandTotal() + $invoice->getBulkGoodsFee());
+        $invoice->setBulkGoodsFee($fee);
+        $invoice->setGrandTotal($invoice->getGrandTotal() + $feeExclTax);
+        $invoice->setBaseGrandTotal($invoice->getBaseGrandTotal() + $feeExclTax);
 
         return $this;
     }
