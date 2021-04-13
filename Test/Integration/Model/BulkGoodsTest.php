@@ -66,6 +66,7 @@ class BulkGoodsTest extends \PHPUnit\Framework\TestCase
     /**
      * @magentoConfigFixture default_store bulk_goods/general/is_enabled 1
      * @magentoConfigFixture default_store bulk_goods/general/fee 10
+     * @magentoConfigFixture default_store general/country/default DE
      * @magentoConfigFixture default_store tax/calculation/shipping_includes_tax 1
      * @magentoConfigFixture default_store tax/classes/shipping_tax_class 2
      * @magentoConfigFixture default_store tax/defaults/country DE
@@ -94,6 +95,7 @@ class BulkGoodsTest extends \PHPUnit\Framework\TestCase
     /**
      * @magentoConfigFixture default_store bulk_goods/general/is_enabled 1
      * @magentoConfigFixture default_store bulk_goods/general/fee 10
+     * @magentoConfigFixture default_store general/country/default DE
      * @magentoConfigFixture default_store tax/calculation/shipping_includes_tax 0
      * @magentoConfigFixture default_store tax/classes/shipping_tax_class 2
      * @magentoConfigFixture default_store tax/defaults/country DE
