@@ -9,9 +9,17 @@ class AddFeeAsCustomItem implements \Magento\Framework\Event\ObserverInterface
      */
     protected $configuration;
 
-    public function __construct(\MageSuite\BulkGoods\Helper\Configuration $configuration)
-    {
+    /**
+     * @var \Magento\Tax\Model\Config
+     */
+    protected $taxConfig;
+
+    public function __construct(
+        \MageSuite\BulkGoods\Helper\Configuration $configuration,
+        \Magento\Tax\Model\Config $taxConfig
+    ) {
         $this->configuration = $configuration;
+        $this->taxConfig = $taxConfig;
     }
 
     public function execute(\Magento\Framework\Event\Observer $observer)
@@ -40,6 +48,11 @@ class AddFeeAsCustomItem implements \Magento\Framework\Event\ObserverInterface
 
         if (!$bulkGoodsFee) {
             return $this;
+        }
+
+        if (!$this->taxConfig->shippingPriceIncludesTax() &&
+            $this->configuration->getSubtotalDisplayType() == \Magento\Tax\Model\Config::DISPLAY_TYPE_INCLUDING_TAX) {
+            $bulkGoodsFee = $this->configuration->getFee();
         }
 
         $cart->addCustomItem($this->configuration->getLabel(), 1, $bulkGoodsFee, \MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_FEE_CODE);

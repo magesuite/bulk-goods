@@ -43,7 +43,10 @@ abstract class AbstractTotal extends \Magento\Quote\Model\Quote\Address\Total\Ab
 
     protected function validateQuote($quote, $shippingAssignment)
     {
-        if ($shippingAssignment->getShipping()->getAddress()->getAddressType() != \Magento\Quote\Model\Quote\Address::TYPE_SHIPPING || $quote->isVirtual()) {
+        $addressType = $shippingAssignment->getShipping()->getAddress()->getAddressType();
+
+        if ($addressType != \Magento\Quote\Model\Quote\Address::TYPE_SHIPPING
+            || $quote->isVirtual()) {
             return false;
         }
 
@@ -74,11 +77,15 @@ abstract class AbstractTotal extends \Magento\Quote\Model\Quote\Address\Total\Ab
 
     protected function canApplyTotal(\Magento\Quote\Model\Quote $quote)
     {
-        if(!$this->configuration->isEnabled()){
+        if (!$this->configuration->isEnabled()) {
             return false;
         }
 
         if (!$quote->getId()) {
+            return false;
+        }
+
+        if (!$this->getBaseAmount($quote)) {
             return false;
         }
 
