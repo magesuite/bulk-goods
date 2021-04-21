@@ -43,7 +43,7 @@ class AddFeeAsCustomItem implements \Magento\Framework\Event\ObserverInterface
         }
 
         if (!$bulkGoodsFee && $payment->getMethod() == \Magento\Paypal\Model\Config::METHOD_EXPRESS) {
-            $bulkGoodsFee = $cart->getSalesModel()->getDataUsingMethod(\MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_FEE_CODE);
+            $bulkGoodsFee = (float)$cart->getSalesModel()->getDataUsingMethod(\MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_FEE_CODE);
         }
 
         if (!$bulkGoodsFee) {
