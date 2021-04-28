@@ -85,7 +85,9 @@ abstract class AbstractTotal extends \Magento\Quote\Model\Quote\Address\Total\Ab
             return false;
         }
 
-        if (!$this->getBaseAmount($quote)) {
+        $fee = (float)$quote->getData('bulk_goods_fee');
+
+        if (!$this->getBaseAmount($quote) && !$fee) {
             return false;
         }
 
