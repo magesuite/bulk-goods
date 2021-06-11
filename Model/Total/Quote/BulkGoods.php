@@ -2,15 +2,24 @@
 
 namespace MageSuite\BulkGoods\Model\Total\Quote;
 
-class BulkGoods extends AbstractTotal
+class BulkGoods extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
 {
+    /**
+     * @var \MageSuite\BulkGoods\Api\BulkGoodsInterface
+     */
+    protected $bulkGoods;
+
+    /**
+     * @var \MageSuite\BulkGoods\Helper\Configuration
+     */
+    protected $configuration;
+
     public function __construct(
-        \Magento\Framework\App\Request\Http $request,
         \MageSuite\BulkGoods\Api\BulkGoodsInterface $bulkGoods,
-        \MageSuite\BulkGoods\Helper\Configuration $configuration,
-        \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
+        \MageSuite\BulkGoods\Helper\Configuration $configuration
     ) {
-        parent::__construct($request, $bulkGoods, $configuration, $priceCurrency);
+        $this->bulkGoods = $bulkGoods;
+        $this->configuration = $configuration;
 
         $this->setCode(\MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_FEE_CODE);
     }
@@ -24,25 +33,22 @@ class BulkGoods extends AbstractTotal
             return $this;
         }
 
-        $baseAmount = $this->getBaseAmount($quote);
-        $amount = $this->getConvertedAmount($baseAmount);
-        $baseAmountWithTax = $this->getBaseAmountWithTax($quote);
-        $amountWithTax = $this->getConvertedAmount($baseAmountWithTax);
+        $amount = $this->bulkGoods->getBaseAmount($quote);
 
         $total->setBaseTotalAmount(\MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_FEE_CODE, $amount);
-        $total->setTotalAmount(\MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_FEE_CODE, $baseAmount);
+        $total->setTotalAmount(\MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_FEE_CODE, $amount);
 
-        $total->setBaseBulkGoodsFee($baseAmount);
+        $total->setBaseBulkGoodsFee($amount);
         $total->setBulkGoodsFee($amount);
 
-        $quote->setBaseBulkGoodsFee($baseAmountWithTax);
-        $quote->setBulkGoodsFee($amountWithTax);
+        $quote->setBaseBulkGoodsFee($amount);
+        $quote->setBulkGoodsFee($amount);
 
         $taxableQuoteAssociate = [
             \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector::KEY_ASSOCIATED_TAXABLE_TYPE => \MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_FEE_CODE,
             \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector::KEY_ASSOCIATED_TAXABLE_CODE => \MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_FEE_CODE,
-            \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector::KEY_ASSOCIATED_TAXABLE_UNIT_PRICE => $baseAmount,
-            \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector::KEY_ASSOCIATED_TAXABLE_BASE_UNIT_PRICE => $baseAmount,
+            \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector::KEY_ASSOCIATED_TAXABLE_UNIT_PRICE => $amount,
+            \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector::KEY_ASSOCIATED_TAXABLE_BASE_UNIT_PRICE => $amount,
             \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector::KEY_ASSOCIATED_TAXABLE_QUANTITY => 1,
             \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector::KEY_ASSOCIATED_TAXABLE_TAX_CLASS_ID => $this->bulkGoods->getShippingTaxClassId(),
             \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector::KEY_ASSOCIATED_TAXABLE_PRICE_INCLUDES_TAX => 0,
@@ -64,7 +70,7 @@ class BulkGoods extends AbstractTotal
                 'code' => $this->getCode(),
                 'title' => $this->getLabel(),
                 'value' => $this->configuration->getSubtotalDisplayType() == \Magento\Tax\Model\Config::DISPLAY_TYPE_INCLUDING_TAX ?
-                    $this->getBaseAmountWithTax($quote) : $this->getBaseAmount($quote)
+                    $this->bulkGoods->getBaseAmountWithTax($quote) : $this->bulkGoods->getBaseAmount($quote)
             ];
         }
 
@@ -74,5 +80,32 @@ class BulkGoods extends AbstractTotal
     public function getLabel()
     {
         return $this->bulkGoods->getLabel();
+    }
+
+    protected function validateQuote($quote, $shippingAssignment)
+    {
+        $addressType = $shippingAssignment->getShipping()->getAddress()->getAddressType();
+
+        if ($addressType != \Magento\Quote\Model\Quote\Address::TYPE_SHIPPING || $quote->isVirtual()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function canApplyTotal(\Magento\Quote\Model\Quote $quote)
+    {
+        if (!$this->configuration->isEnabled() || !$quote->getId()) {
+            return false;
+        }
+
+        $fee = (float)$quote->getData('bulk_goods_fee');
+        $amount = $this->bulkGoods->getBaseAmount($quote);
+
+        if (!$fee && !$amount) {
+            return false;
+        }
+
+        return true;
     }
 }

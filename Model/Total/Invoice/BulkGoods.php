@@ -2,17 +2,16 @@
 
 namespace MageSuite\BulkGoods\Model\Total\Invoice;
 
-class BulkGoods extends AbstractTotal
+class BulkGoods extends \Magento\Sales\Model\Order\Invoice\Total\AbstractTotal
 {
     public function collect(\Magento\Sales\Model\Order\Invoice $invoice)
     {
         $order = $invoice->getOrder();
-        $fee = $order->getBulkGoodsFee();
-        $feeExclTax = $this->bulkGoods->getOrderFeeExclTax($order);
 
-        $invoice->setBulkGoodsFee($fee);
-        $invoice->setGrandTotal($invoice->getGrandTotal() + $feeExclTax);
-        $invoice->setBaseGrandTotal($invoice->getBaseGrandTotal() + $feeExclTax);
+        $invoice->setBulkGoodsFee($order->getBulkGoodsFee());
+
+        $invoice->setGrandTotal($invoice->getGrandTotal() + $invoice->getBulkGoodsFee());
+        $invoice->setBaseGrandTotal($invoice->getBaseGrandTotal() + $invoice->getBulkGoodsFee());
 
         return $this;
     }
