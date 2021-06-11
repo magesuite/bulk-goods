@@ -2,20 +2,16 @@
 
 namespace MageSuite\BulkGoods\Model\Total\Creditmemo;
 
-class BulkGoods extends AbstractTotal
+class BulkGoods extends \Magento\Sales\Model\Order\Creditmemo\Total\AbstractTotal
 {
     public function collect(\Magento\Sales\Model\Order\Creditmemo $creditmemo)
     {
         $order = $creditmemo->getOrder();
-        $fee = $order->getBulkGoodsFee();
-        $feeExclTax = $this->bulkGoods->getOrderFeeExclTax($order);
 
-        $creditmemo->setBulkGoodsFee($fee);
+        $creditmemo->setBulkGoodsFee($order->getBulkGoodsFee());
 
-        if ($this->canApplyTotal($order)) {
-            $creditmemo->setGrandTotal($creditmemo->getGrandTotal() + $feeExclTax);
-            $creditmemo->setBaseGrandTotal($creditmemo->getBaseGrandTotal() + $feeExclTax);
-        }
+        $creditmemo->setGrandTotal($creditmemo->getGrandTotal() + $creditmemo->getBulkGoodsFee());
+        $creditmemo->setBaseGrandTotal($creditmemo->getBaseGrandTotal() + $creditmemo->getBulkGoodsFee());
 
         return $this;
     }

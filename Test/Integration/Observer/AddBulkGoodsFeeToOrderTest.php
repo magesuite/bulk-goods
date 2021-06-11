@@ -113,10 +113,10 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
         $quote = $this->prepareQuote($product, $qty);
         $totals = $quote->getTotals();
 
-        $this->assertEquals(10, $totals['subtotal']->getValue());
+        $this->assertEquals(50, $totals['subtotal']->getValue());
         $this->assertEquals(10, $totals['bulk_goods_fee']->getValue());
         $this->assertEquals(0, $totals['tax']->getValue());
-        $this->assertEquals(20, $totals['grand_total']->getValue());
+        $this->assertEquals(60, $totals['grand_total']->getValue());
 
         $orderId = $this->cartManagement->placeOrder($quote->getId());
         $order = $this->orderRepository->get($orderId);
@@ -147,10 +147,10 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
         $quote = $this->prepareQuote($product, $qty);
         $totals = $quote->getTotals();
 
-        $this->assertEquals(10, $totals['subtotal']->getValue());
+        $this->assertEquals(50, $totals['subtotal']->getValue());
         $this->assertEquals(10, $totals['bulk_goods_fee']->getValue());
         $this->assertEquals(1.9, $totals['tax']->getValue());
-        $this->assertEquals(21.9, $totals['grand_total']->getValue());
+        $this->assertEquals(61.9, $totals['grand_total']->getValue());
 
         $orderId = $this->cartManagement->placeOrder($quote->getId());
         $order = $this->orderRepository->get($orderId);
