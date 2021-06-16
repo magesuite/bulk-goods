@@ -211,8 +211,6 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
 
         $quote->collectTotals();
 
-        $quote->setData(\MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_FEE_CODE, $this->bulkGoods->getBaseAmountWithTax($quote));
-
         return $quote;
     }
 }
