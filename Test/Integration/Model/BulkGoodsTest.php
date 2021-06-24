@@ -92,18 +92,15 @@ class BulkGoodsTest extends \PHPUnit\Framework\TestCase
      * @magentoConfigFixture current_store tax/calculation/shipping_includes_tax 0
      * @magentoConfigFixture current_store tax/classes/shipping_tax_class 2
      * @magentoConfigFixture default_store tax/defaults/country DE
-     * @magentoDataFixture Magento/Sales/_files/order.php
      * @magentoDbIsolation enabled
      * @magentoAppIsolation enabled
      * @magentoAppArea frontend
+     * @magentoDataFixture loadProducts
      * @magentoDataFixture loadTaxRates
      */
     public function testBulkGoodsFeeIsNotReducedForInvoice()
     {
-        $order = $this->orderHelper->findOrderByIncrementId('100000001');
-        $order->setData(\MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_FEE_CODE, 9);
-        $this->orderRepository->save($order);
-
+        $order = $this->orderHelper->createOrder('DE');
         $invoice = $this->invoiceService->prepareInvoice($order);
         $invoice->register();
         $invoice->save();
@@ -111,6 +108,30 @@ class BulkGoodsTest extends \PHPUnit\Framework\TestCase
         $expectedFee = $order->getData(\MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_FEE_CODE);
         $bulkGoodsFee = $invoice->getData(\MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_FEE_CODE);
         $this->assertEquals($expectedFee, $bulkGoodsFee);
+    }
+
+    /**
+     * @magentoConfigFixture current_store bulk_goods/general/is_enabled 1
+     * @magentoConfigFixture current_store bulk_goods/general/fee 9
+     * @magentoConfigFixture current_store tax/calculation/shipping_includes_tax 0
+     * @magentoConfigFixture current_store tax/classes/shipping_tax_class 2
+     * @magentoConfigFixture default_store tax/defaults/country DE
+     * @magentoDbIsolation enabled
+     * @magentoAppIsolation enabled
+     * @magentoAppArea frontend
+     * @magentoDataFixture loadProducts
+     * @magentoDataFixture loadTaxRates
+     */
+    public function testTotalsWithBulkGoodsAndTaxesIsSameOnOrderAndInvoice()
+    {
+        $order = $this->orderHelper->createOrder('DE');
+        $invoice = $this->invoiceService->prepareInvoice($order);
+        $invoice->register();
+        $invoice->save();
+
+        $orderTotals = $order->getGrandTotal();
+        $invoiceTotals = $invoice->getGrandTotal();
+        $this->assertEquals($orderTotals, $invoiceTotals);
     }
 
     public static function loadTaxRates()

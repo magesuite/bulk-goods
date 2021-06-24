@@ -9,6 +9,7 @@
     <section name="order_invoice">
         <group name="totals">
             <item name="bulk_goods_fee" instance="MageSuite\BulkGoods\Model\Total\Invoice\BulkGoods" sort_order="160" />
+            <item name="bulk_goods_fee_tax" instance="MageSuite\BulkGoods\Model\Total\Invoice\BulkGoodsTax" sort_order="210"/>
         </group>
     </section>
     <section name="order_creditmemo">

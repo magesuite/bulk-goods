@@ -2,7 +2,7 @@
 
 namespace MageSuite\BulkGoods\Model\Total\Invoice;
 
-class BulkGoods extends \Magento\Sales\Model\Order\Invoice\Total\AbstractTotal
+class BulkGoodsTax extends \Magento\Sales\Model\Order\Invoice\Total\AbstractTotal
 {
     /**
      * @var \MageSuite\BulkGoods\Model\BulkGoods
@@ -20,12 +20,12 @@ class BulkGoods extends \Magento\Sales\Model\Order\Invoice\Total\AbstractTotal
     public function collect(\Magento\Sales\Model\Order\Invoice $invoice)
     {
         $order = $invoice->getOrder();
-        $invoice->setBulkGoodsFee($order->getBulkGoodsFee());
+        $taxFee = $order->getBulkGoodsFee() - $this->bulkGoods->getOrderFeeExclTax($order);
 
-        $bulkGoodsFeeExclTax = $this->bulkGoods->getOrderFeeExclTax($order);
-        $invoice->setGrandTotal($invoice->getGrandTotal() + $bulkGoodsFeeExclTax);
-        $invoice->setBaseGrandTotal($invoice->getBaseGrandTotal() + $bulkGoodsFeeExclTax);
-
-        return $this;
+        if (!$invoice->isLast() && $invoice->getBulkGoodsFee() > 0) {
+            $invoice->setTaxAmount($invoice->getTaxAmount() + $taxFee);
+            $invoice->setGrandTotal($invoice->getGrandTotal() + $taxFee);
+            $invoice->setBaseGrandTotal($invoice->getBaseGrandTotal() + $taxFee);
+        }
     }
 }

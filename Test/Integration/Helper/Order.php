@@ -73,9 +73,9 @@ class Order
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
     }
 
-    public function createOrder($countryCode = 'DE')
+    public function createOrder($countryCode = 'DE', $request = 1)
     {
-        $quote = $this->prepareQuote($countryCode);
+        $quote = $this->prepareQuote($countryCode, $request);
         $orderId = $this->cartManagement->placeOrder($quote->getId());
 
         return $this->orderRepository->get($orderId);
@@ -92,7 +92,7 @@ class Order
         return array_shift($orders);
     }
 
-    protected function prepareQuote($countryCode)
+    protected function prepareQuote($countryCode, $request)
     {
         $cartId = $this->cartManagement->createEmptyCart();
         $quote = $this->cartRepository->get($cartId);
@@ -102,7 +102,7 @@ class Order
         $quote->setCustomerIsGuest(true);
         $quote->setCurrency();
         $product = $this->productRepository->get('product');
-        $quote->addProduct($product, 1);
+        $quote->addProduct($product, $request);
 
         $addressData = [
             'postcode' => '11111',
