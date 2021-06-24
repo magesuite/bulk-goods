@@ -20,39 +20,9 @@ class BulkGoodsFeeTax extends \PHPUnit\Framework\TestCase
     protected $searchCriteriaBuilder;
 
     /**
-     * @var \Magento\Quote\Model\QuoteRepository
-     */
-    protected $cartRepository;
-
-    /**
-     * @var \Magento\Quote\Api\Data\AddressInterfaceFactory
-     */
-    protected $addressFactory;
-
-    /**
-     * @var \Magento\Catalog\Model\ProductRepository
-     */
-    protected $productRepository;
-
-    /**
-     * @var \Magento\Sales\Api\OrderManagementInterface
-     */
-    protected $orderManagement;
-
-    /**
      * @var \Magento\Sales\Model\OrderRepository
      */
     protected $orderRepository;
-
-    /**
-     * @var \Magento\Quote\Api\CartManagementInterface
-     */
-    protected $cartManagement;
-
-    /**
-     * @var \Magento\Quote\Api\Data\CartItemInterfaceFactory
-     */
-    protected $cartItemFactory;
 
     public function setUp(): void
     {
@@ -60,13 +30,7 @@ class BulkGoodsFeeTax extends \PHPUnit\Framework\TestCase
         $this->orderHelper = $objectManager->get(\MageSuite\BulkGoods\Test\Integration\Helper\Order::class);
         $this->invoiceService = $objectManager->get(\Magento\Sales\Model\Service\InvoiceService::class);
         $this->searchCriteriaBuilder = $objectManager->get(\Magento\Framework\Api\SearchCriteriaBuilder::class);
-        $this->cartRepository = $objectManager->get(\Magento\Quote\Api\CartRepositoryInterface::class);
-        $this->addressFactory = $objectManager->get(\Magento\Quote\Api\Data\AddressInterfaceFactory::class);
-        $this->productRepository = $objectManager->get(\Magento\Catalog\Model\ProductRepository::class);
-        $this->orderManagement = $objectManager->get(\Magento\Sales\Api\OrderManagementInterface::class);
         $this->orderRepository = $objectManager->get(\Magento\Sales\Model\OrderRepository::class);
-        $this->cartManagement = $objectManager->get(\Magento\Quote\Api\CartManagementInterface::class);
-        $this->cartItemFactory = $objectManager->get(\Magento\Quote\Api\Data\CartItemInterfaceFactory::class);
     }
     /**
      * @magentoAppIsolation enabled
@@ -112,8 +76,6 @@ class BulkGoodsFeeTax extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals($expectedFeeWithoutTax, $invoice->getBulkGoodsFee());
         $this->assertEquals(0, $invoice->getTaxAmount());
-
-
     }
 
     protected function getOrderByIncrementId($orderId)
