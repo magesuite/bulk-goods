@@ -73,7 +73,7 @@ class BulkGoods implements \MageSuite\BulkGoods\Api\BulkGoodsInterface
             $fee = $this->getFeeAmountExclTax($fee, $quote->getStoreId());
         }
 
-        return $this->priceCurrency->convertAndRound($fee);
+        return $this->priceCurrency->round($fee);
     }
 
     protected function getFeeAmountExclTax($fee, $storeId)
@@ -86,7 +86,7 @@ class BulkGoods implements \MageSuite\BulkGoods\Api\BulkGoodsInterface
 
         $fee = $fee / ((100 + $taxRate) / 100);
 
-        return $this->priceCurrency->convertAndRound($fee);
+        return $this->priceCurrency->round($fee);
     }
 
     public function getOrderFeeExclTax(\Magento\Sales\Model\Order $order)

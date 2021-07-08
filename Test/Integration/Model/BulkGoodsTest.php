@@ -100,7 +100,7 @@ class BulkGoodsTest extends \PHPUnit\Framework\TestCase
         $order = $this->orderRepository->get($orderId);
         $bulkGoodsFee = $this->bulkGoods->getOrderFeeExclTax($order);
 
-        $this->assertEquals($expectedFee, $bulkGoodsFee);
+        $this->assertEqualsWithDelta($expectedFee, $bulkGoodsFee, 0.01);
     }
 
     /**
