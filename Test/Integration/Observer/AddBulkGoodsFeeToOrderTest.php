@@ -13,55 +13,20 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
     protected $objectManager;
 
     /**
-     * @var \Magento\Store\Model\StoreManagerInterface
-     */
-    protected $storeManager;
-
-    /**
-     * @var \Magento\Quote\Api\CartManagementInterface
-     */
-    protected $cartManagement;
-
-    /**
-     * @var \Magento\Quote\Api\CartRepositoryInterface
-     */
-    protected $cartRepository;
-
-    /**
-     * @var \Magento\Checkout\Model\Cart
-     */
-    protected $cart;
-
-    /**
-     * @var \Magento\Quote\Model\QuoteManagement
-     */
-    protected $quoteManagement;
-
-    /**
-     * @var \Magento\Catalog\Api\ProductRepositoryInterface
-     */
-    protected $productRepository;
-
-    /**
      * @var \MageSuite\BulkGoods\Model\BulkGoods
      */
     protected $bulkGoods;
 
     /**
-     * @var \Magento\Sales\Api\OrderRepositoryInterface
+     * @var \MageSuite\BulkGoods\Test\Integration\Helper\Order
      */
-    protected $orderRepository;
+    protected $orderHelper;
 
     public function setUp(): void
     {
         $this->objectManager = \Magento\TestFramework\ObjectManager::getInstance();
-
-        $this->storeManager = $this->objectManager->get(\Magento\Store\Model\StoreManagerInterface::class);
-        $this->cartManagement = $this->objectManager->get(\Magento\Quote\Api\CartManagementInterface::class);
-        $this->cartRepository = $this->objectManager->get(\Magento\Quote\Api\CartRepositoryInterface::class);
-        $this->productRepository = $this->objectManager->get(\Magento\Catalog\Api\ProductRepositoryInterface::class);
         $this->bulkGoods = $this->objectManager->get(\MageSuite\BulkGoods\Model\BulkGoods::class);
-        $this->orderRepository = $this->objectManager->get(\Magento\Sales\Api\OrderRepositoryInterface::class);
+        $this->orderHelper = $this->objectManager->get(\MageSuite\BulkGoods\Test\Integration\Helper\Order::class);
     }
 
     public static function loadTaxRates()
@@ -85,13 +50,7 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
     public function testItDoesntAddBulkGoodsFee()
     {
         $expectedFee = 0;
-        $qty = 1;
-        $product = $this->productRepository->get('product');
-
-        $quote = $this->prepareQuote($product, $qty);
-        $orderId = $this->cartManagement->placeOrder($quote->getId());
-
-        $order = $this->orderRepository->get($orderId);
+        $order = $this->orderHelper->createOrder();
 
         $this->assertEquals($expectedFee, $order->getBulkGoodsFee());
     }
@@ -108,18 +67,16 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
     public function testItAddsBulkGoodsFeeInclTaxCorrectlyToOrder()
     {
         $expectedFee = 10;
-        $qty = 1;
-        $product = $this->productRepository->get('product');
-        $quote = $this->prepareQuote($product, $qty);
+        $quote = $this->orderHelper->prepareQuote();
         $totals = $quote->getTotals();
 
         $this->assertEquals(50, $totals['subtotal']->getValue());
         $this->assertEquals(10, $totals['bulk_goods_fee']->getValue());
+        $this->assertEquals(5, $totals['shipping']->getValue());
         $this->assertEquals(0, $totals['tax']->getValue());
-        $this->assertEquals(60, $totals['grand_total']->getValue());
+        $this->assertEquals(65, $totals['grand_total']->getValue());
 
-        $orderId = $this->cartManagement->placeOrder($quote->getId());
-        $order = $this->orderRepository->get($orderId);
+        $order = $this->orderHelper->createOrderByQuoteId($quote->getId());
         $this->assertEquals($expectedFee, $order->getBulkGoodsFee());
     }
 
@@ -142,75 +99,82 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
     public function testItAddsBulkGoodsFeeExclTaxCorrectlyToOrder()
     {
         $expectedFee = 11.9;
-        $qty = 1;
-        $product = $this->productRepository->get('product');
-        $quote = $this->prepareQuote($product, $qty);
+        $quote = $this->orderHelper->prepareQuote();
         $totals = $quote->getTotals();
 
         $this->assertEquals(50, $totals['subtotal']->getValue());
         $this->assertEquals(10, $totals['bulk_goods_fee']->getValue());
-        $this->assertEquals(1.9, $totals['tax']->getValue());
-        $this->assertEquals(61.9, $totals['grand_total']->getValue());
+        $this->assertEquals(5, $totals['shipping']->getValue());
+        $this->assertEquals(2.85, $totals['tax']->getValue());
+        $this->assertEquals(67.85, $totals['grand_total']->getValue());
 
-        $orderId = $this->cartManagement->placeOrder($quote->getId());
-        $order = $this->orderRepository->get($orderId);
+        $order = $this->orderHelper->createOrderByQuoteId($quote->getId());
         $this->assertEquals($expectedFee, $order->getBulkGoodsFee());
     }
 
-    private function prepareQuote($product, $qty)
+    /**
+     * @magentoConfigFixture default_store bulk_goods/general/is_enabled 1
+     * @magentoConfigFixture default_store bulk_goods/general/fee 10
+     * @magentoConfigFixture default_store general/country/default DE
+     * @magentoConfigFixture default_store tax/calculation/shipping_includes_tax 1
+     * @magentoConfigFixture default_store tax/classes/shipping_tax_class 2
+     * @magentoConfigFixture default_store tax/defaults/country DE
+     * @magentoConfigFixture default_store shipping/origin/country_id DE
+     * @magentoConfigFixture default_store shipping/origin/region_id 81
+     * @magentoConfigFixture default_store shipping/origin/postcode 90034
+     * @magentoAppArea frontend
+     * @magentoAppIsolation enabled
+     * @magentoDbIsolation enabled
+     * @magentoDataFixture loadProducts
+     * @magentoDataFixture loadTaxRates
+     */
+    public function testItAddsBulkGoodsFeeInclTaxBasedOnShippingAddressCorrectlyToOrder()
     {
-        $addressData = [
-            'region_id' => '82',
-            'postcode' => '11111',
-            'lastname' => 'lastname',
-            'firstname' => 'firstname',
-            'street' => 'street',
-            'city' => 'Berlin',
-            'email' => 'admin@example.com',
-            'telephone' => '11111111',
-            'country_id' => 'DE'
-        ];
+        // de tax rate 19%
+        $expectedFee = 10;
+        $quote = $this->orderHelper->prepareQuote();
+        $totals = $quote->getTotals();
 
-        $shippingMethod = 'freeshipping_freeshipping';
+        $this->assertEquals(50, $totals['subtotal']->getValue());
+        $this->assertEquals(8.4, $totals['bulk_goods_fee']->getValue());
+        $this->assertEquals(4.2, $totals['shipping']->getValue());
+        $this->assertEquals(2.4, $totals['tax']->getValue());
+        $this->assertEquals(65, $totals['grand_total']->getValue());
 
-        $store = $this->storeManager->getStore(1);
-        $websiteId = $store->getWebsiteId();
+        $order = $this->orderHelper->createOrderByQuoteId($quote->getId());
+        $this->assertEquals($expectedFee, $order->getBulkGoodsFee());
+    }
 
-        $cartId = $this->cartManagement->createEmptyCart();
-        $quote = $this->cartRepository->get($cartId);
-        $quote->setStore($store);
+    /**
+     * @magentoConfigFixture default_store bulk_goods/general/is_enabled 1
+     * @magentoConfigFixture default_store bulk_goods/general/fee 10
+     * @magentoConfigFixture default_store general/country/default DE
+     * @magentoConfigFixture current_store tax/calculation/price_includes_tax 1
+     * @magentoConfigFixture default_store tax/calculation/shipping_includes_tax 1
+     * @magentoConfigFixture default_store tax/calculation/based_on shipping
+     * @magentoConfigFixture default_store tax/classes/shipping_tax_class 2
+     * @magentoConfigFixture default_store tax/defaults/country DE
+     * @magentoConfigFixture default_store shipping/origin/country_id PL
+     * @magentoAppArea frontend
+     * @magentoAppIsolation enabled
+     * @magentoDbIsolation enabled
+     * @magentoDataFixture loadProducts
+     * @magentoDataFixture loadTaxRates
+     */
+    public function testItAddsBulkGoodsFeeInclTaxBasedOnShippingAddressWithDifferentShippingCountryCorrectlyToOrder()
+    {
+        // pl tax rate 23%
+        $expectedFee = 10;
+        $quote = $this->orderHelper->prepareQuote('PL');
+        $totals = $quote->getTotals();
 
-        $quote->setCustomerEmail('test@example.com');
-        $quote->setCustomerIsGuest(true);
+        $this->assertEquals(50, $totals['subtotal']->getValue());
+        $this->assertEquals(8.13, $totals['bulk_goods_fee']->getValue());
+        $this->assertEquals(4.07, $totals['shipping']->getValue());
+        $this->assertEquals(2.8, $totals['tax']->getValue());
+        $this->assertEquals(65, $totals['grand_total']->getValue());
 
-        $quote->setCurrency();
-
-        $quote->addProduct($product, intval($qty));
-
-        $billingAddress = $this->objectManager->create('Magento\Quote\Api\Data\AddressInterface', ['data' => $addressData]);
-        $billingAddress->setAddressType('billing');
-
-        $shippingAddress = clone $billingAddress;
-        $shippingAddress->setId(null)->setAddressType('shipping');
-
-        $rate = $this->objectManager->create(\Magento\Quote\Model\Quote\Address\Rate::class);
-        $rate->setCode($shippingMethod);
-
-        $quote->getPayment()->importData(['method' => 'checkmo']);
-
-        $quote->setBillingAddress($billingAddress);
-        $quote->setShippingAddress($shippingAddress);
-        $quote->getShippingAddress()->addShippingRate($rate);
-        $quote->getShippingAddress()->setShippingMethod($shippingMethod);
-
-
-        $quote->setPaymentMethod('checkmo');
-        $quote->setInventoryProcessed(false);
-
-        $quote->save();
-
-        $quote->collectTotals();
-
-        return $quote;
+        $order = $this->orderHelper->createOrderByQuoteId($quote->getId());
+        $this->assertEquals($expectedFee, $order->getBulkGoodsFee());
     }
 }

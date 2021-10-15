@@ -5,46 +5,58 @@ namespace MageSuite\BulkGoods\Service;
 class TaxCalculator
 {
     /**
-     * @var \Magento\Store\Model\StoreManagerInterface
-     */
-    protected $storeManager;
-
-    /**
      * @var \Magento\Tax\Model\Config
      */
     protected $taxConfig;
-
-    /**
-     * @var \Magento\Tax\Api\TaxCalculationInterface
-     */
-    protected $taxRateCalculation;
 
     /**
      * @var \Magento\Tax\Model\Calculation
      */
     protected $taxCalculation;
 
+    /**
+     * @var \Magento\Framework\DataObject
+     */
+    private $addressRateRequest = null;
+
     public function __construct(
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Tax\Model\Config $taxConfig,
-        \Magento\Tax\Api\TaxCalculationInterface $taxRateCalculation,
         \Magento\Tax\Model\Calculation $taxCalculation
     ) {
-        $this->storeManager = $storeManager;
         $this->taxConfig = $taxConfig;
-        $this->taxRateCalculation = $taxRateCalculation;
         $this->taxCalculation = $taxCalculation;
     }
 
-    public function calculate($amount)
+    public function calculate($quote, $amount)
     {
-        $store = $this->storeManager->getStore();
-        $shippingTaxClassId = $this->getShippingTaxClassId();
-
-        $taxRate = $this->taxRateCalculation->getCalculatedRate($shippingTaxClassId, null, $store->getId());
+        $taxRate = $this->getTaxRate($quote);
         $tax = $this->taxCalculation->calcTaxAmount($amount, $taxRate);
 
         return $tax;
+    }
+
+    protected function getAddressRateRequest(\Magento\Quote\Model\Quote $quote)
+    {
+        if (null == $this->addressRateRequest) {
+            $this->addressRateRequest = $this->taxCalculation->getRateRequest(
+                $quote->getShippingAddress(),
+                $quote->getBillingAddress(),
+                $quote->getCustomerTaxClassId(),
+                $quote->getStoreId(),
+                $quote->getCustomerId()
+            );
+        }
+
+        return $this->addressRateRequest;
+    }
+
+    public function getTaxRate(\Magento\Quote\Model\Quote $quote){
+        $taxRateRequest = $this->getAddressRateRequest($quote)->setProductClassId(
+            $this->taxConfig->getShippingTaxClass()
+        );
+        $rate = $this->taxCalculation->getRate($taxRateRequest);
+
+        return $rate;
     }
 
     public function getShippingTaxClassId()

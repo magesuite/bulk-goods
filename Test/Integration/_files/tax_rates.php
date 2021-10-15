@@ -28,6 +28,16 @@ $taxesData = [
         'zip_is_range' => null,
         'zip_from' => null,
         'zip_to' => null
+    ],
+    [
+        'tax_country_id' => 'PL',
+        'tax_region_id' => 0,
+        'tax_postcode' => '*',
+        'rate' => 23,
+        'code' => 'PL VAT Rate',
+        'zip_is_range' => null,
+        'zip_from' => null,
+        'zip_to' => null
     ]
 ];
 
