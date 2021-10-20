@@ -99,7 +99,7 @@ class BulkGoods extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
             return false;
         }
 
-        $fee = (float)$quote->getData('bulk_goods_fee');
+        $fee = (float)$quote->getData(\MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_FEE_CODE);
         $amount = $this->bulkGoods->getBaseAmount($quote);
 
         if (!$fee && !$amount) {

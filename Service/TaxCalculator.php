@@ -27,7 +27,7 @@ class TaxCalculator
         $this->taxCalculation = $taxCalculation;
     }
 
-    public function calculate($quote, $amount)
+    public function calculateTax($quote, $amount)
     {
         $taxRate = $this->getTaxRate($quote);
         $tax = $this->taxCalculation->calcTaxAmount($amount, $taxRate);

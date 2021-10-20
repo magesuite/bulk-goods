@@ -29,36 +29,22 @@ class BulkGoods implements \MageSuite\BulkGoods\Api\BulkGoodsInterface
     protected $taxConfig;
 
     /**
-     * @var \Magento\Tax\Api\TaxCalculationInterface
-     */
-    protected $taxRateCalculation;
-
-    /**
      * @var \Magento\Framework\Pricing\PriceCurrencyInterface
      */
     protected $priceCurrency;
-
-    /**
-     * @var \Magento\Tax\Helper\Data
-     */
-    protected $taxHelper;
 
     public function __construct(
         \MageSuite\BulkGoods\Service\FeeProvider $feeProvider,
         \MageSuite\BulkGoods\Helper\Configuration $configuration,
         \MageSuite\BulkGoods\Service\TaxCalculator $taxCalculator,
         \Magento\Tax\Model\Config $taxConfig,
-        \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency,
-        \Magento\Tax\Helper\Data $taxHelper,
-        \Magento\Tax\Api\TaxCalculationInterface $taxRateCalculation
+        \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
     ) {
         $this->feeProvider = $feeProvider;
         $this->configuration = $configuration;
         $this->taxCalculator = $taxCalculator;
         $this->taxConfig = $taxConfig;
-        $this->taxRateCalculation = $taxRateCalculation;
         $this->priceCurrency = $priceCurrency;
-        $this->taxHelper = $taxHelper;
     }
 
     public function getBaseAmountWithTax($quote, $force = false)
@@ -91,29 +77,6 @@ class BulkGoods implements \MageSuite\BulkGoods\Api\BulkGoodsInterface
         return $this->priceCurrency->round($fee);
     }
 
-    public function getOrderFeeExclTax(\Magento\Sales\Model\Order $order)
-    {
-        $fee = (float)$order->getBulkGoodsFee();
-
-        // for EU customers with valid VAT ID
-        if (!$order->getTaxAmount()) {
-            return $fee;
-        }
-
-        $taxClassAmount = $this->taxHelper->getCalculatedTaxes($order);
-        if(isset($taxClassAmount[0]) && isset($taxClassAmount[0]['percent'])){
-            $taxRate = $taxClassAmount[0]['percent'];
-        } else {
-            $taxRate = $this->taxRateCalculation->getCalculatedRate(
-                $this->taxConfig->getShippingTaxClass(),
-                null,
-                $storeId
-            );
-        }
-
-        return $this->getFeeAmountExclTax($fee, $taxRate);
-    }
-
     public function getBaseTaxAmount($quote, $amount = null, $force = false)
     {
         $shippingAddress = $quote->getShippingAddress();
@@ -130,7 +93,15 @@ class BulkGoods implements \MageSuite\BulkGoods\Api\BulkGoodsInterface
             $amount = $this->getBaseAmount($quote);
         }
 
-        return $this->taxCalculator->calculate($quote, $amount);
+        return $this->taxCalculator->calculateTax($quote, $amount);
+    }
+
+    public function getOrderFeeExclTax(\Magento\Sales\Model\Order $order)
+    {
+        $fee = $order->getData(self::BULK_GOODS_FEE_CODE);
+        $tax = $order->getData(self::BULK_GOODS_TAX_CODE);
+
+        return $fee - $tax;
     }
 
     public function getLabel()

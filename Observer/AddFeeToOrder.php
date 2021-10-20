@@ -18,6 +18,7 @@ class AddFeeToOrder implements \Magento\Framework\Event\ObserverInterface
     {
         $quote = $observer->getQuote();
         $fee = $this->bulkGoods->getBaseAmountWithTax($quote);
+        $tax = $this->bulkGoods->getBaseTaxAmount($quote);
 
         if(!(float)$fee){
             return $this;
@@ -25,6 +26,7 @@ class AddFeeToOrder implements \Magento\Framework\Event\ObserverInterface
 
         $order = $observer->getOrder();
         $order->setData(\MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_FEE_CODE, $fee);
+        $order->setData(\MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_TAX_CODE, $tax);
 
         return $this;
     }
