@@ -21,23 +21,51 @@ class AddFeeInCustomerArea
         $this->configuration = $configuration;
     }
 
-    public function aroundGetTotals(\Magento\Sales\Block\Order\Totals $subject, \Closure $proceed, $area = null)
+    public function beforeGetTotals(\Magento\Sales\Block\Order\Totals $subject, $area = null)
     {
-        $fee = $subject->getSource()->getBulkGoodsFee();
+        $fee = $subject->getSource()->getData(\MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_FEE_CODE);
+        $tax = $subject->getSource()->getData(\MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_TAX_CODE);
 
         if (!(float)$fee) {
             return $proceed($area);
         }
 
+        $code = \MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_FEE_CODE;
+        $field = \MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_FEE_CODE;
+        $value = $fee;
+        $label = $this->bulkGoods->getLabel();
+
+        if($this->configuration->getSubtotalDisplayType() == \Magento\Tax\Model\Config::DISPLAY_TYPE_EXCLUDING_TAX) {
+            $value = $fee - $tax;
+        }
+
+        if($this->configuration->getSubtotalDisplayType() == \Magento\Tax\Model\Config::DISPLAY_TYPE_BOTH) {
+            $codeExcl = $code . "_excl";
+            $valueExcl = $fee - $tax;
+            $labelExcl = sprintf("%s %s", $label, __("(Excl. Tax)"));
+
+            $code = $code . "_incl";
+            $label = sprintf("%s %s", $label, __("(Incl. Tax)"));
+
+            $bulkGoodsTotalExcl = new \Magento\Framework\DataObject([
+                'code' => $codeExcl,
+                'field' => $field,
+                'value' => $valueExcl,
+                'label' => $labelExcl
+            ]);
+
+            $subject->addTotal($bulkGoodsTotalExcl, 'shipping');
+        }
+
         $bulkGoodsTotal = new \Magento\Framework\DataObject([
-            'code' => \MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_FEE_CODE,
-            'field' => \MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_FEE_CODE,
-            'value' => $this->configuration->getSubtotalDisplayType() == \Magento\Tax\Model\Config::DISPLAY_TYPE_INCLUDING_TAX ? $fee : $this->configuration->getFee(),
-            'label' => $this->bulkGoods->getLabel()
+            'code' => $code,
+            'field' => $field,
+            'value' => $value,
+            'label' => $label
         ]);
 
         $subject->addTotal($bulkGoodsTotal, 'shipping');
 
-        return $proceed($area);
+        return [$area];
     }
 }

@@ -19,16 +19,6 @@ class BulkGoods extends \Magento\Framework\View\Element\Template
         $this->configuration = $configuration;
     }
 
-    public function getOrder()
-    {
-        return $this->getParentBlock()->getOrder();
-    }
-
-    public function getSource()
-    {
-        return $this->getParentBlock()->getSource();
-    }
-
     public function initTotals()
     {
         $this->getParentBlock();
@@ -52,5 +42,15 @@ class BulkGoods extends \Magento\Framework\View\Element\Template
         $this->getParentBlock()->addTotalBefore($total, 'grand_total');
 
         return $this;
+    }
+
+    public function getOrder()
+    {
+        return $this->getParentBlock()->getOrder();
+    }
+
+    public function getSource()
+    {
+        return $this->getParentBlock()->getSource();
     }
 }
