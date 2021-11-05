@@ -69,7 +69,7 @@ class BulkGoods extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
             return [
                 'code' => $this->getCode(),
                 'title' => $this->getLabel(),
-                'value' => $this->configuration->getSubtotalDisplayType() == \Magento\Tax\Model\Config::DISPLAY_TYPE_INCLUDING_TAX ?
+                'value' => $this->configuration->getDisplayCartSubtotalType() == \Magento\Tax\Model\Config::DISPLAY_TYPE_INCLUDING_TAX ?
                     $this->bulkGoods->getBaseAmountWithTax($quote) : $this->bulkGoods->getBaseAmount($quote)
             ];
         }

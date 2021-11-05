@@ -22,12 +22,45 @@ class BulkGoodsTax implements \Magento\Framework\Setup\Patch\DataPatchInterface
     public function apply()
     {
         $this->moduleDataSetup->startSetup();
-
         $connection = $this->moduleDataSetup->getConnection();
-        $sqlUpdate = 'UPDATE `sales_order` o, (SELECT `order_id`, SUM(`tax_amount`) as item_tax_sum FROM `sales_order_item` GROUP BY `order_id`) as i
-SET o.`bulk_goods_tax` = (o.`tax_amount` - o.`shipping_tax_amount` - i.`item_tax_sum`)
-WHERE o.`bulk_goods_fee` > 0 AND i.`order_id` = o.`entity_id`';
-        $connection->query($sqlUpdate);
+
+        $select = $connection->select()
+            ->from(
+                ['o' => $this->moduleDataSetup->getTable('sales_order')],
+                ['o.entity_id', 'o.tax_amount', 'o.shipping_tax_amount']
+            )
+            ->joinLeft(
+                ['i' => $this->moduleDataSetup->getTable('sales_order_item')],
+                'i.order_id = o.entity_id',
+                ['item_tax_sum' => new \Zend_Db_Expr('SUM(i.tax_amount)')]
+            )
+            ->where('o.bulk_goods_fee > 0')
+            ->group('o.entity_id');
+
+        $bulkGoodsSelect = $connection->fetchAll($select);
+
+        $updateData = [];
+        foreach($bulkGoodsSelect as $row) {
+            $updateData[$row['entity_id']] = $row['tax_amount'] - $row['shipping_tax_amount'] - $row['item_tax_sum'];
+        }
+
+        $conditions = [];
+        foreach ($updateData as $id => $bulkGoodsTax) {
+            $case = $connection->quoteInto('?', $id);
+            $result = $connection->quoteInto('?', $bulkGoodsTax);
+            $conditions[$case] = $result;
+        }
+
+        $value = $connection->getCaseSql('entity_id', $conditions, 'bulk_goods_tax');
+        $where = ['entity_id IN (?)' => array_keys($updateData)];
+
+        try {
+            $connection->beginTransaction();
+            $connection->update($this->moduleDataSetup->getTable('sales_order'), ['bulk_goods_tax' => $value], $where);
+            $connection->commit();
+        } catch(\Exception $e) {
+            $connection->rollBack();
+        }
 
         $this->moduleDataSetup->endSetup();
     }

@@ -27,7 +27,7 @@ class AddFeeInCustomerArea
         $tax = $subject->getSource()->getData(\MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_TAX_CODE);
 
         if (!(float)$fee) {
-            return $proceed($area);
+            return [$area];
         }
 
         $code = \MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_FEE_CODE;
@@ -35,11 +35,11 @@ class AddFeeInCustomerArea
         $value = $fee;
         $label = $this->bulkGoods->getLabel();
 
-        if($this->configuration->getSubtotalDisplayType() == \Magento\Tax\Model\Config::DISPLAY_TYPE_EXCLUDING_TAX) {
+        if($this->configuration->getDisplayCartSubtotalType() == \Magento\Tax\Model\Config::DISPLAY_TYPE_EXCLUDING_TAX) {
             $value = $fee - $tax;
         }
 
-        if($this->configuration->getSubtotalDisplayType() == \Magento\Tax\Model\Config::DISPLAY_TYPE_BOTH) {
+        if($this->configuration->getDisplayCartSubtotalType() == \Magento\Tax\Model\Config::DISPLAY_TYPE_BOTH) {
             $codeExcl = $code . "_excl";
             $valueExcl = $fee - $tax;
             $labelExcl = sprintf("%s %s", $label, __("(Excl. Tax)"));

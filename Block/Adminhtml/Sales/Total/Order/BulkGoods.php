@@ -34,7 +34,7 @@ class BulkGoods extends \Magento\Framework\View\Element\Template
         $total = new \Magento\Framework\DataObject(
             [
                 'code' => \MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_FEE_CODE,
-                'value' => $this->configuration->getSubtotalDisplayType() == \Magento\Tax\Model\Config::DISPLAY_TYPE_INCLUDING_TAX ? $fee : $this->configuration->getFee(),
+                'value' => $this->configuration->getDisplayCartSubtotalType() == \Magento\Tax\Model\Config::DISPLAY_TYPE_INCLUDING_TAX ? $fee : $this->configuration->getFee(),
                 'label' => $this->configuration->getLabel(),
             ]
         );

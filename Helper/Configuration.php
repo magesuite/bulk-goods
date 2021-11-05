@@ -42,9 +42,9 @@ class Configuration extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->getConfig()->getIsFreeShipping();
     }
 
-    public function getSubtotalDisplayType()
+    public function getDisplayCartSubtotalType()
     {
-        return $this->scopeConfig->getValue(\Magento\Tax\Model\Config::XML_PATH_DISPLAY_SALES_SUBTOTAL, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue(\Magento\Tax\Model\Config::XML_PATH_DISPLAY_CART_SUBTOTAL, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
     protected function getConfig()
