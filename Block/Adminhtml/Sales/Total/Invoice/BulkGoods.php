@@ -26,7 +26,7 @@ class BulkGoods extends \Magento\Framework\View\Element\Template
 
     public function initTotals()
     {
-        if(!$this->getSource()->getBulkGoodsFee()) {
+        if (!$this->getSource()->getBulkGoodsFee()) {
             return $this;
         }
 

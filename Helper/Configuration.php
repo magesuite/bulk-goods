@@ -49,7 +49,7 @@ class Configuration extends \Magento\Framework\App\Helper\AbstractHelper
 
     protected function getConfig()
     {
-        if($this->config === null){
+        if ($this->config === null) {
             $this->config = new \Magento\Framework\DataObject(
                 $this->scopeConfig->getValue(self::XML_PATH_BULK_GOODS_CONFIGURATION, \Magento\Store\Model\ScopeInterface::SCOPE_STORE)
             );

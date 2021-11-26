@@ -90,7 +90,6 @@ class BulkGoodsFeeTaxTest extends \PHPUnit\Framework\TestCase
         require __DIR__ . '/../../../_files/configurable_product.php';
     }
 
-
     public static function loadOrderWithConfigurableFixture()
     {
         require __DIR__ . '/../../../../../../../../dev/tests/integration/testsuite/Magento/ConfigurableProduct/_files/order_item_with_configurable_and_options.php';

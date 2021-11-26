@@ -5,7 +5,7 @@ namespace MageSuite\BulkGoods\Setup\Patch\Schema;
 class BulkGoodsTax implements \Magento\Framework\Setup\Patch\SchemaPatchInterface
 {
     /** @var \Magento\Framework\Setup\ModuleDataSetupInterface */
-    private $moduleDataSetup;
+    protected $moduleDataSetup;
 
     /**
      * @param \Magento\Framework\Setup\ModuleDataSetupInterface $moduleDataSetup
@@ -34,7 +34,6 @@ class BulkGoodsTax implements \Magento\Framework\Setup\Patch\SchemaPatchInterfac
                 'comment' => 'Bulk Goods Tax'
             ]
         );
-
 
         $this->moduleDataSetup->endSetup();
     }

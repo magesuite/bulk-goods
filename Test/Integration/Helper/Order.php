@@ -81,7 +81,7 @@ class Order
 
     public function createOrder($countryCode = 'DE', $request = 1, $product = null)
     {
-        if(empty($product)) {
+        if (empty($product)) {
             $product = $this->productRepository->get('product');
         }
 
@@ -110,7 +110,7 @@ class Order
 
     public function prepareQuote($countryCode = 'DE', $request = 1, $product = null)
     {
-        if(empty($product)) {
+        if (empty($product)) {
             $product = $this->productRepository->get('product');
         }
 
@@ -123,7 +123,7 @@ class Order
         $quote->setCurrency();
         $quote->addProduct($product, $request);
 
-        switch($countryCode) {
+        switch ($countryCode) {
             case 'PL':
                 $regionId = $this->region->loadByCode('PL-24', 'PL')->getRegionId();
                 break;

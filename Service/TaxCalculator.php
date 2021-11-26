@@ -17,7 +17,7 @@ class TaxCalculator
     /**
      * @var \Magento\Framework\DataObject
      */
-    private $addressRateRequest = null;
+    protected $addressRateRequest = null;
 
     public function __construct(
         \Magento\Tax\Model\Config $taxConfig,
@@ -50,7 +50,8 @@ class TaxCalculator
         return $this->addressRateRequest;
     }
 
-    public function getTaxRate(\Magento\Quote\Model\Quote $quote){
+    public function getTaxRate(\Magento\Quote\Model\Quote $quote)
+    {
         $taxRateRequest = $this->getAddressRateRequest($quote)->setProductClassId(
             $this->taxConfig->getShippingTaxClass()
         );

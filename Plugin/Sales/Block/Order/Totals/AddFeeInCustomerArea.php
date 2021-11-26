@@ -35,11 +35,11 @@ class AddFeeInCustomerArea
         $value = $fee;
         $label = $this->bulkGoods->getLabel();
 
-        if($this->configuration->getDisplayCartSubtotalType() == \Magento\Tax\Model\Config::DISPLAY_TYPE_EXCLUDING_TAX) {
+        if ($this->configuration->getDisplayCartSubtotalType() == \Magento\Tax\Model\Config::DISPLAY_TYPE_EXCLUDING_TAX) {
             $value = $fee - $tax;
         }
 
-        if($this->configuration->getDisplayCartSubtotalType() == \Magento\Tax\Model\Config::DISPLAY_TYPE_BOTH) {
+        if ($this->configuration->getDisplayCartSubtotalType() == \Magento\Tax\Model\Config::DISPLAY_TYPE_BOTH) {
             $codeExcl = $code . "_excl";
             $valueExcl = $fee - $tax;
             $labelExcl = sprintf("%s %s", $label, __("(Excl. Tax)"));

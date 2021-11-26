@@ -5,7 +5,7 @@ namespace MageSuite\BulkGoods\Setup\Patch\Data;
 class BulkGoodsTax implements \Magento\Framework\Setup\Patch\DataPatchInterface
 {
     /** @var \Magento\Framework\Setup\ModuleDataSetupInterface */
-    private $moduleDataSetup;
+    protected $moduleDataSetup;
 
     /**
      * @param \Magento\Framework\Setup\ModuleDataSetupInterface $moduleDataSetup
@@ -39,8 +39,13 @@ class BulkGoodsTax implements \Magento\Framework\Setup\Patch\DataPatchInterface
 
         $bulkGoodsSelect = $connection->fetchAll($select);
 
+        if (empty($bulkGoodsSelect)) {
+            $this->moduleDataSetup->endSetup();
+            return;
+        }
+
         $updateData = [];
-        foreach($bulkGoodsSelect as $row) {
+        foreach ($bulkGoodsSelect as $row) {
             $updateData[$row['entity_id']] = $row['tax_amount'] - $row['shipping_tax_amount'] - $row['item_tax_sum'];
         }
 
@@ -58,7 +63,7 @@ class BulkGoodsTax implements \Magento\Framework\Setup\Patch\DataPatchInterface
             $connection->beginTransaction();
             $connection->update($this->moduleDataSetup->getTable('sales_order'), ['bulk_goods_tax' => $value], $where);
             $connection->commit();
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $connection->rollBack();
         }
 

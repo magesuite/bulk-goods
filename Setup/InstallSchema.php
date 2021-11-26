@@ -75,7 +75,8 @@ class InstallSchema implements \Magento\Framework\Setup\InstallSchemaInterface
         $setup->endSetup();
     }
 
-    protected function columnExist($setup, $table, $column) {
+    protected function columnExist($setup, $table, $column)
+    {
         return $setup->getConnection()->tableColumnExists($setup->getTable($table), $column);
     }
 }

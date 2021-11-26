@@ -36,8 +36,13 @@ class AddBulkGoodsFee
         $this->bulkGoods = $bulkGoods;
     }
 
-    public function beforeAddProductInfo(\Payone\Core\Model\Api\Invoice $subject, \Payone\Core\Model\Api\Request\Base $oRequest, \Magento\Sales\Model\Order $oOrder, $aPositions = false, $blDebit = false)
-    {
+    public function beforeAddProductInfo(
+        \Payone\Core\Model\Api\Invoice $subject,
+        \Payone\Core\Model\Api\Request\Base $oRequest,
+        \Magento\Sales\Model\Order $oOrder,
+        $aPositions = false,
+        $blDebit = false
+    ) {
         if (!$this->configuration->isEnabled()) {
             return [$oRequest, $oOrder, $aPositions, $blDebit];
         }
