@@ -50,6 +50,11 @@ class Order
      */
     protected $searchCriteriaBuilder;
 
+    /**
+     * @var \Magento\Directory\Model\Region
+     */
+    protected $region;
+
     public function __construct(
         \Magento\Quote\Api\CartManagementInterface $cartManagement,
         \Magento\Quote\Api\CartRepositoryInterface $cartRepository,
@@ -59,8 +64,8 @@ class Order
         \Magento\Quote\Model\Quote\Address\RateFactory $addressRateFactory,
         \MageSuite\BulkGoods\Api\BulkGoodsInterface $bulkGoods,
         \Magento\Sales\Api\OrderRepositoryInterface $orderRepository,
-        \Magento\Framework\Api\SearchCriteriaBuilder $searchCriteriaBuilder
-
+        \Magento\Framework\Api\SearchCriteriaBuilder $searchCriteriaBuilder,
+        \Magento\Directory\Model\Region $region
     ) {
         $this->cartManagement = $cartManagement;
         $this->cartRepository = $cartRepository;
@@ -71,12 +76,23 @@ class Order
         $this->bulkGoods = $bulkGoods;
         $this->orderRepository = $orderRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
+        $this->region = $region;
     }
 
-    public function createOrder($countryCode = 'DE', $request = 1)
+    public function createOrder($countryCode = 'DE', $request = 1, $product = null)
     {
-        $quote = $this->prepareQuote($countryCode, $request);
-        $orderId = $this->cartManagement->placeOrder($quote->getId());
+        if (empty($product)) {
+            $product = $this->productRepository->get('product');
+        }
+
+        $quote = $this->prepareQuote($countryCode, $request, $product);
+
+        return $this->createOrderByQuoteId($quote->getId());
+    }
+
+    public function createOrderByQuoteId($quoteId)
+    {
+        $orderId = $this->cartManagement->placeOrder($quoteId);
 
         return $this->orderRepository->get($orderId);
     }
@@ -92,8 +108,12 @@ class Order
         return array_shift($orders);
     }
 
-    protected function prepareQuote($countryCode, $request)
+    public function prepareQuote($countryCode = 'DE', $request = 1, $product = null)
     {
+        if (empty($product)) {
+            $product = $this->productRepository->get('product');
+        }
+
         $cartId = $this->cartManagement->createEmptyCart();
         $quote = $this->cartRepository->get($cartId);
         $store = $this->storeManager->getStore(1);
@@ -101,8 +121,18 @@ class Order
         $quote->setCustomerEmail('test@example.com');
         $quote->setCustomerIsGuest(true);
         $quote->setCurrency();
-        $product = $this->productRepository->get('product');
         $quote->addProduct($product, $request);
+
+        switch ($countryCode) {
+            case 'PL':
+                $regionId = $this->region->loadByCode('PL-24', 'PL')->getRegionId();
+                break;
+            case 'FR':
+                $regionId = $this->region->loadByCode('62', 'FR')->getRegionId();
+                break;
+            default:
+                $regionId = $this->region->loadByCode('BER', 'DE')->getRegionId();
+        }
 
         $addressData = [
             'postcode' => '11111',
@@ -112,21 +142,21 @@ class Order
             'city' => 'Berlin',
             'email' => 'admin@example.com',
             'telephone' => '11111111',
-            'country_id' => $countryCode
+            'country_id' => $countryCode,
+            'region_id' => $regionId
         ];
 
         $billingAddress = $this->addressFactory->create();
         $billingAddress->setData($addressData);
         $billingAddress->setAddressType('billing');
-
         $shippingAddress = clone $billingAddress;
         $shippingAddress->setId(null)->setAddressType('shipping');
+        $quote->setBillingAddress($billingAddress);
+        $quote->setShippingAddress($shippingAddress);
 
         $rate = $this->addressRateFactory->create();
         $rate->setCode(self::FLATRATE_SHIPPING_METHOD_CODE);
 
-        $quote->setBillingAddress($billingAddress);
-        $quote->setShippingAddress($shippingAddress);
         $quote->getShippingAddress()->addShippingRate($rate);
         $quote->getShippingAddress()->setShippingMethod(self::FLATRATE_SHIPPING_METHOD_CODE);
 
@@ -140,5 +170,4 @@ class Order
 
         return $quote;
     }
-
 }

@@ -63,6 +63,36 @@ class BulkGoodsFeeTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(0, $invoice->getTaxAmount());
     }
 
+    /**
+     * @magentoAppArea frontend
+     * @magentoAppIsolation enabled
+     * @magentoDbIsolation enabled
+     * @magentoConfigFixture current_store bulk_goods/general/is_enabled 1
+     * @magentoConfigFixture current_store bulk_goods/general/fee 10
+     * @magentoConfigFixture current_store carriers/flatrate/price 0
+     * @magentoConfigFixture current_store general/country/default DE
+     * @magentoConfigFixture current_store tax/calculation/based_on shipping
+     * @magentoConfigFixture current_store tax/calculation/shipping_includes_tax 1
+     * @magentoConfigFixture current_store tax/classes/shipping_tax_class 2
+     * @magentoConfigFixture current_store tax/defaults/country DE
+     * @magentoConfigFixture current_store shipping/origin/country_id DE
+     * @magentoDataFixture loadProducts
+     * @magentoDataFixture loadTaxRates
+     */
+    public function testItAddsBulkGoodsFeeWithCorrectTaxToInvoiceWithDifferentShippingCountry()
+    {
+        $expectedFee = 10;
+        $expectedTax = 1.87;
+
+        $orderWithTax = $this->orderHelper->createOrder('PL');
+
+        $invoice = $this->invoiceService->prepareInvoice($orderWithTax);
+        $invoice->register()->save();
+
+        $this->assertEquals($expectedFee, $invoice->getBulkGoodsFee());
+        $this->assertEquals($expectedTax, $invoice->getTaxAmount());
+    }
+
     public static function loadTaxRates()
     {
         require __DIR__ . '/../../../_files/tax_rates.php';

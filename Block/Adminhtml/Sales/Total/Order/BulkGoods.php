@@ -19,16 +19,6 @@ class BulkGoods extends \Magento\Framework\View\Element\Template
         $this->configuration = $configuration;
     }
 
-    public function getOrder()
-    {
-        return $this->getParentBlock()->getOrder();
-    }
-
-    public function getSource()
-    {
-        return $this->getParentBlock()->getSource();
-    }
-
     public function initTotals()
     {
         $this->getParentBlock();
@@ -44,7 +34,7 @@ class BulkGoods extends \Magento\Framework\View\Element\Template
         $total = new \Magento\Framework\DataObject(
             [
                 'code' => \MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_FEE_CODE,
-                'value' => $this->configuration->getSubtotalDisplayType() == \Magento\Tax\Model\Config::DISPLAY_TYPE_INCLUDING_TAX ? $fee : $this->configuration->getFee(),
+                'value' => $this->configuration->getDisplayCartSubtotalType() == \Magento\Tax\Model\Config::DISPLAY_TYPE_INCLUDING_TAX ? $fee : $this->configuration->getFee(),
                 'label' => $this->configuration->getLabel(),
             ]
         );
@@ -52,5 +42,15 @@ class BulkGoods extends \Magento\Framework\View\Element\Template
         $this->getParentBlock()->addTotalBefore($total, 'grand_total');
 
         return $this;
+    }
+
+    public function getOrder()
+    {
+        return $this->getParentBlock()->getOrder();
+    }
+
+    public function getSource()
+    {
+        return $this->getParentBlock()->getSource();
     }
 }

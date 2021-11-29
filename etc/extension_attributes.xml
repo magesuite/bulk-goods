@@ -3,5 +3,6 @@
 
     <extension_attributes for="Magento\Sales\Api\Data\OrderInterface">
         <attribute code="bulk_goods_fee" type="string" />
+        <attribute code="bulk_goods_tax" type="string" />
     </extension_attributes>
 </config>

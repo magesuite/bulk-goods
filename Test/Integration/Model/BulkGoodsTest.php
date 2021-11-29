@@ -13,7 +13,7 @@ class BulkGoodsTest extends \PHPUnit\Framework\TestCase
     protected $orderHelper;
 
     /**
-     * @var MageSuite\BulkGoods\Api\BulkGoodsInterface
+     * @var \MageSuite\BulkGoods\Api\BulkGoodsInterface
      */
     protected $bulkGoods;
 
@@ -56,6 +56,29 @@ class BulkGoodsTest extends \PHPUnit\Framework\TestCase
     {
         $expectedFee = 8.4;
         $order = $this->orderHelper->createOrder();
+        $bulkGoodsFee = $this->bulkGoods->getOrderFeeExclTax($order);
+
+        $this->assertEqualsWithDelta($expectedFee, $bulkGoodsFee, 0.01);
+    }
+
+    /**
+     * @magentoConfigFixture default_store bulk_goods/general/is_enabled 1
+     * @magentoConfigFixture default_store bulk_goods/general/fee 10
+     * @magentoConfigFixture default_store general/country/default DE
+     * @magentoConfigFixture default_store tax/calculation/shipping_includes_tax 1
+     * @magentoConfigFixture default_store tax/classes/shipping_tax_class 2
+     * @magentoConfigFixture default_store tax/defaults/country DE
+     * @magentoConfigFixture default_store shipping/origin/country_id PL
+     * @magentoAppArea frontend
+     * @magentoAppIsolation enabled
+     * @magentoDbIsolation enabled
+     * @magentoDataFixture loadProducts
+     * @magentoDataFixture loadTaxRates
+     */
+    public function testItAddsBulkGoodsFeeInclTaxWithDifferentShippingCountryCorrectlyToOrder()
+    {
+        $expectedFee = 8.13;
+        $order = $this->orderHelper->createOrder('PL');
         $bulkGoodsFee = $this->bulkGoods->getOrderFeeExclTax($order);
 
         $this->assertEqualsWithDelta($expectedFee, $bulkGoodsFee, 0.01);

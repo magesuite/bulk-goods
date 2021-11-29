@@ -11,7 +11,7 @@ class FeeProvider
 
     public function __construct(
         \MageSuite\BulkGoods\Helper\Configuration $configuration
-    ){
+    ) {
         $this->configuration = $configuration;
     }
 

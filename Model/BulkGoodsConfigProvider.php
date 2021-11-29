@@ -22,7 +22,7 @@ class BulkGoodsConfigProvider implements \Magento\Checkout\Model\ConfigProviderI
         \Magento\Checkout\Model\Session $checkoutSession,
         \MageSuite\BulkGoods\Helper\Configuration $configuration,
         \MageSuite\BulkGoods\Model\BulkGoods $bulkGoods
-    ){
+    ) {
         $this->checkoutSession = $checkoutSession;
         $this->configuration = $configuration;
         $this->bulkGoods = $bulkGoods;
@@ -33,7 +33,7 @@ class BulkGoodsConfigProvider implements \Magento\Checkout\Model\ConfigProviderI
         $bulkGoodsConfig = [];
         $quote = $this->checkoutSession->getQuote();
 
-        if(empty($quote)){
+        if (empty($quote)) {
             return $bulkGoodsConfig;
         }
 

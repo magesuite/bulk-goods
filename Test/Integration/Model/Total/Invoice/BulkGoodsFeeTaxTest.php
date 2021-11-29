@@ -2,7 +2,7 @@
 
 namespace MageSuite\BulkGoods\Test\Integration\Model\Total\Invoice;
 
-class BulkGoodsFeeTax extends \PHPUnit\Framework\TestCase
+class BulkGoodsFeeTaxTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var \MageSuite\BulkGoods\Test\Integration\Helper\Order
@@ -89,7 +89,6 @@ class BulkGoodsFeeTax extends \PHPUnit\Framework\TestCase
     {
         require __DIR__ . '/../../../_files/configurable_product.php';
     }
-
 
     public static function loadOrderWithConfigurableFixture()
     {
