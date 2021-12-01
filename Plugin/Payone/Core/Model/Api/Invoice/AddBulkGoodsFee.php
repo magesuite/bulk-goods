@@ -51,7 +51,9 @@ class AddBulkGoodsFee
             return [$oRequest, $oOrder, $aPositions, $blDebit];
         }
 
-        $fee = (float)$oOrder->getTaxAmount() ? $this->bulkGoods->getBaseAmountWithTax($oOrder, true) : $this->bulkGoods->getBaseAmount($oOrder);
+        $fee = (float)$oOrder->getTaxAmount() ?
+            $oOrder->getData(\MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_FEE_CODE) :
+            $this->bulkGoods->getOrderFeeExclTax($oOrder);
 
         if (!(float)$fee) {
             return [$oRequest, $oOrder, $aPositions, $blDebit];
