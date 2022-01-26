@@ -51,7 +51,7 @@ class AddFeeAsCustomItem implements \Magento\Framework\Event\ObserverInterface
         }
 
         if (!$this->taxConfig->shippingPriceIncludesTax() &&
-            $this->configuration->getDisplaySalesSubtotalType() == \Magento\Tax\Model\Config::DISPLAY_TYPE_INCLUDING_TAX) {
+            $this->configuration->getDisplayCartSubtotalType() == \Magento\Tax\Model\Config::DISPLAY_TYPE_INCLUDING_TAX) {
             $bulkGoodsFee = $this->configuration->getFee();
         }
 
