@@ -21,6 +21,7 @@ class BulkGoods extends \Magento\Sales\Model\Order\Creditmemo\Total\AbstractTota
     {
         $order = $creditmemo->getOrder();
         $creditmemo->setBulkGoodsFee($order->getBulkGoodsFee());
+        $creditmemo->setBulkGoodsTax($order->getBulkGoodsTax());
 
         $bulkGoodsFeeExclTax = $this->bulkGoods->getOrderFeeExclTax($order);
         $creditmemo->setGrandTotal($creditmemo->getGrandTotal() + $bulkGoodsFeeExclTax);

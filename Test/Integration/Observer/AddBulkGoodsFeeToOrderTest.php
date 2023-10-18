@@ -177,4 +177,110 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
         $order = $this->orderHelper->createOrderByQuoteId($quote->getId());
         $this->assertEquals($expectedFee, $order->getBulkGoodsFee());
     }
+
+    /**
+     * @magentoConfigFixture default_store bulk_goods/general/is_enabled 1
+     * @magentoConfigFixture default_store bulk_goods/general/fee 10
+     * @magentoConfigFixture default_store general/country/default DE
+     * @magentoConfigFixture current_store tax/calculation/price_includes_tax 1
+     * @magentoConfigFixture default_store tax/calculation/shipping_includes_tax 1
+     * @magentoConfigFixture default_store tax/calculation/based_on shipping
+     * @magentoConfigFixture default_store tax/classes/shipping_tax_class 2
+     * @magentoConfigFixture default_store tax/defaults/country DE
+     * @magentoConfigFixture default_store shipping/origin/country_id PL
+     * @magentoConfigFixture admin_store tax/cart_display/subtotal 1
+     * @magentoConfigFixture default_store tax/cart_display/subtotal 1
+     * @magentoAppArea adminhtml
+     * @magentoAppIsolation enabled
+     * @magentoDbIsolation enabled
+     * @magentoDataFixture loadProducts
+     * @magentoDataFixture loadTaxRates
+     */
+    public function testBulkGoodsAmountInTotalBlockExcludedTax(): void
+    {
+        $html = $this->prepareOrderTotalsHtml();
+
+        $this->assertStringContainsString(
+            '<tdclass="label">BulkGoodsFee</td><td><span><spanclass="price">$8.13</span>',
+            $html,
+            'Bulk Goods Fee contains tax or is wrong configured'
+        );
+    }
+
+    /**
+     * @magentoConfigFixture default_store bulk_goods/general/is_enabled 1
+     * @magentoConfigFixture default_store bulk_goods/general/fee 10
+     * @magentoConfigFixture default_store general/country/default DE
+     * @magentoConfigFixture current_store tax/calculation/price_includes_tax 1
+     * @magentoConfigFixture default_store tax/calculation/shipping_includes_tax 1
+     * @magentoConfigFixture default_store tax/calculation/based_on shipping
+     * @magentoConfigFixture default_store tax/classes/shipping_tax_class 2
+     * @magentoConfigFixture default_store tax/defaults/country DE
+     * @magentoConfigFixture default_store shipping/origin/country_id PL
+     * @magentoConfigFixture admin_store tax/cart_display/subtotal 2
+     * @magentoConfigFixture default_store tax/cart_display/subtotal 2
+     * @magentoAppArea adminhtml
+     * @magentoAppIsolation enabled
+     * @magentoDbIsolation enabled
+     * @magentoDataFixture loadProducts
+     * @magentoDataFixture loadTaxRates
+     */
+    public function testBulkGoodsAmountInTotalBlockIncludedTax(): void
+    {
+        $html = $this->prepareOrderTotalsHtml();
+
+        $this->assertStringContainsString(
+            '<tdclass="label">BulkGoodsFee</td><td><span><spanclass="price">$10.00</span>',
+            $html,
+            'Bulk Goods Fee doesn\'t contain tax'
+        );
+    }
+
+    /**
+     * @magentoConfigFixture default_store bulk_goods/general/is_enabled 1
+     * @magentoConfigFixture default_store bulk_goods/general/fee 10
+     * @magentoConfigFixture default_store general/country/default DE
+     * @magentoConfigFixture current_store tax/calculation/price_includes_tax 1
+     * @magentoConfigFixture default_store tax/calculation/shipping_includes_tax 1
+     * @magentoConfigFixture default_store tax/calculation/based_on shipping
+     * @magentoConfigFixture default_store tax/classes/shipping_tax_class 2
+     * @magentoConfigFixture default_store tax/defaults/country DE
+     * @magentoConfigFixture default_store shipping/origin/country_id PL
+     * @magentoConfigFixture admin_store tax/cart_display/subtotal 3
+     * @magentoConfigFixture default_store tax/cart_display/subtotal 3
+     * @magentoAppArea adminhtml
+     * @magentoAppIsolation enabled
+     * @magentoDbIsolation enabled
+     * @magentoDataFixture loadProducts
+     * @magentoDataFixture loadTaxRates
+     */
+    public function testBulkGoodsAmountInTotalBlockIncludedAndExcludedTax(): void
+    {
+        $html = $this->prepareOrderTotalsHtml();
+
+        $this->assertStringContainsString(
+            '<tdclass="label">BulkGoodsFee(Incl.Tax)</td><td><span><spanclass="price">$10.00</span></span></td></tr>'
+            . '<trclass="col-3"><tdclass="label">BulkGoodsFee(Excl.Tax)</td><td><span><spanclass="price">$8.13</span>',
+            $html,
+            'Bulk Goods Fee doesn\'t wrongly configured'
+        );
+    }
+
+    protected function prepareOrderTotalsHtml(): string
+    {
+        $quote = $this->orderHelper->prepareQuote('PL');
+        $order = $this->orderHelper->createOrderByQuoteId($quote->getId());
+
+        $request = $this->objectManager->get(\Magento\Framework\App\RequestInterface::class);
+
+        $params = [
+            'order_id' => $order->getId()
+        ];
+        $request->setParams($params);
+
+        $block = $this->objectManager->create(\Magento\Sales\Block\Adminhtml\Order\Totals::class);
+        $block->setOrder($order)->setTemplate('Magento_Sales::order/totals.phtml');
+
+        return preg_replace('/\s+/', '', $block->toHtml());
+    }
 }
