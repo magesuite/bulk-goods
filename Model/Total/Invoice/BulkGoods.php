@@ -21,6 +21,7 @@ class BulkGoods extends \Magento\Sales\Model\Order\Invoice\Total\AbstractTotal
     {
         $order = $invoice->getOrder();
         $invoice->setBulkGoodsFee($order->getBulkGoodsFee());
+        $invoice->setBulkGoodsTax($order->getBulkGoodsTax());
 
         $bulkGoodsFeeExclTax = $this->bulkGoods->getOrderFeeExclTax($order);
         $invoice->setGrandTotal($invoice->getGrandTotal() + $bulkGoodsFeeExclTax);

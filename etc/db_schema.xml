@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="sales_invoice">
+        <column name="bulk_goods_tax" xsi:type="decimal" scale="4" precision="12" nullable="true" comment="Bulk goods fee tax" default="0.0000" />
+    </table>
+
+    <table name="sales_creditmemo">
+        <column name="bulk_goods_tax" xsi:type="decimal" scale="4" precision="12" nullable="true" comment="Bulk goods fee tax" default="0.0000" />
+    </table>
+</schema>

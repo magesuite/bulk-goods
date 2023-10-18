@@ -1,0 +1,21 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:MageSuite_Changelog:etc/changelog.xsd">
+    <module id="MageSuite_BulkGoods"
+            name="MageSuite_BulkGoods"
+            description="This module allows marking products as bulk goods and adding additional fee when bulk goods products are ordered."
+            url="https://github.com/magesuite/bulk-goods">
+        <changelog>
+            <tag version="v2.0.10" date="2023-06-15">
+                <entry>
+                    <type>FIX</type>
+                    <overview>Fix net price display for bulk goods in invoice and credit memeo.</overview>
+                    <ticket_id>P2G-2217</ticket_id>
+                </entry>
+                <entry>
+                    <type>FEAT</type>
+                    <overview>Integration tests for displaying Bulk Goods Fee in total</overview>
+                    <ticket_id>IPET-2230</ticket_id>
+                </entry>
+            </tag>
+        </changelog>
+    </module>
+</config>
