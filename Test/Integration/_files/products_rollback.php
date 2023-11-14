@@ -8,7 +8,7 @@ foreach([500] as $productId) {
     $product = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create('Magento\Catalog\Model\Product');
 
     $product->load($productId);
-    
+
     if ($product->getId()) {
         $product->delete();
     }
