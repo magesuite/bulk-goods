@@ -4,7 +4,7 @@
             description="This module allows marking products as bulk goods and adding additional fee when bulk goods products are ordered."
             url="https://github.com/magesuite/bulk-goods">
         <changelog>
-            <tag version="v2.0.10" date="2023-06-15">
+            <tag version="2.0.10" date="2023-06-15">
                 <entry>
                     <type>FIX</type>
                     <overview>Fix net price display for bulk goods in invoice and credit memeo.</overview>
@@ -16,11 +16,18 @@
                     <ticket_id>IPET-2230</ticket_id>
                 </entry>
             </tag>
-            <tag version="v3.0.0" date="2023-11-06">
+            <tag version="3.0.0" date="2023-11-06">
                 <entry>
                     <type>FEAT</type>
                     <overview>Move Payone code to separate module</overview>
                     <ticket_id>DOG-1690</ticket_id>
+                </entry>
+            </tag>
+            <tag version="3.0.1" date="2024-09-30">
+                <entry>
+                    <type>FIX</type>
+                    <overview>Fix bulk's fee double invoiced</overview>
+                    <ticket_id>DOG-1922</ticket_id>
                 </entry>
             </tag>
         </changelog>
