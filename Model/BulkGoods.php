@@ -4,9 +4,11 @@ namespace MageSuite\BulkGoods\Model;
 
 class BulkGoods implements \MageSuite\BulkGoods\Api\BulkGoodsInterface
 {
-    const BULK_GOODS_ATTRIBUTE_CODE = 'is_bulk_good';
-    const BULK_GOODS_FEE_CODE = 'bulk_goods_fee';
-    const BULK_GOODS_TAX_CODE = 'bulk_goods_tax';
+    public const BULK_GOODS_ATTRIBUTE_CODE = 'is_bulk_good';
+    public const BULK_GOODS_FEE_CODE = 'bulk_goods_fee';
+    public const BULK_GOODS_TAX_CODE = 'bulk_goods_tax';
+    public const BULK_GOODS_FEE_INVOICED_CODE = 'bulk_goods_fee_invoiced';
+    public const BULK_GOODS_TAX_INVOICED_CODE = 'bulk_goods_tax_invoiced';
 
     /**
      * @var \MageSuite\BulkGoods\Service\FeeProvider

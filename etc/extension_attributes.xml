@@ -1,15 +1,17 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Api/etc/extension_attributes.xsd">
     <extension_attributes for="Magento\Sales\Api\Data\OrderInterface">
-        <attribute code="bulk_goods_fee" type="string" />
-        <attribute code="bulk_goods_tax" type="string" />
+        <attribute code="bulk_goods_fee" type="float" />
+        <attribute code="bulk_goods_tax" type="float" />
+        <attribute code="bulk_goods_fee_invoiced" type="float" />
+        <attribute code="bulk_goods_tax_invoiced" type="float" />
     </extension_attributes>
     <extension_attributes for="Magento\Sales\Api\Data\InvoiceInterface">
-        <attribute code="bulk_goods_fee" type="string" />
-        <attribute code="bulk_goods_tax" type="string" />
+        <attribute code="bulk_goods_fee" type="float" />
+        <attribute code="bulk_goods_tax" type="float" />
     </extension_attributes>
     <extension_attributes for="Magento\Sales\Api\Data\CreditmemoItemInterface">
-        <attribute code="bulk_goods_fee" type="string" />
-        <attribute code="bulk_goods_tax" type="string" />
+        <attribute code="bulk_goods_fee" type="float" />
+        <attribute code="bulk_goods_tax" type="float" />
     </extension_attributes>
 </config>

@@ -1,0 +1,27 @@
+{
+    "quote": {
+        "column": {
+            "bulk_goods_fee": true
+        }
+    },
+    "sales_order": {
+        "column": {
+            "bulk_goods_fee": true,
+            "bulk_goods_tax": true,
+            "bulk_goods_fee_invoiced": true,
+            "bulk_goods_tax_invoiced": true
+        }
+    },
+    "sales_invoice": {
+        "column": {
+            "bulk_goods_fee": true,
+            "bulk_goods_tax": true
+        }
+    },
+    "sales_creditmemo": {
+        "column": {
+            "bulk_goods_fee": true,
+            "bulk_goods_tax": true
+        }
+    }
+}

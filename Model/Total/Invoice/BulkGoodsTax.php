@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 namespace MageSuite\BulkGoods\Model\Total\Invoice;
 
 class BulkGoodsTax extends \Magento\Sales\Model\Order\Invoice\Total\AbstractTotal
@@ -7,12 +8,22 @@ class BulkGoodsTax extends \Magento\Sales\Model\Order\Invoice\Total\AbstractTota
     public function collect(\Magento\Sales\Model\Order\Invoice $invoice)
     {
         $order = $invoice->getOrder();
-        $taxFee = $order->getData(\MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_TAX_CODE);
+        $bulkGoodsTax = (float) $order->getData(\MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_TAX_CODE);
+        $bulkGoodsTaxInvoiced = (float) $order->getData(\MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_TAX_INVOICED_CODE);
 
-        if (!$invoice->isLast() && $invoice->getBulkGoodsFee() > 0) {
-            $invoice->setTaxAmount($invoice->getTaxAmount() + $taxFee);
-            $invoice->setGrandTotal($invoice->getGrandTotal() + $taxFee);
-            $invoice->setBaseGrandTotal($invoice->getBaseGrandTotal() + $taxFee);
+        if ($bulkGoodsTax > 0 && $bulkGoodsTaxInvoiced === 0.0) {
+            $this->applyBulkGoodsTax($invoice, $bulkGoodsTax);
         }
+
+        return $this;
+    }
+
+    protected function applyBulkGoodsTax(\Magento\Sales\Api\Data\InvoiceInterface $invoice, float $bulkGoodsTax):void
+    {
+        $invoice->setBulkGoodsTax($bulkGoodsTax);
+        $invoice->getOrder()->setBulkGoodsTaxInvoiced($bulkGoodsTax);
+        $invoice->setTaxAmount($invoice->getTaxAmount() + $bulkGoodsTax);
+        $invoice->setGrandTotal($invoice->getGrandTotal() + $bulkGoodsTax);
+        $invoice->setBaseGrandTotal($invoice->getBaseGrandTotal() + $bulkGoodsTax);
     }
 }
