@@ -106,13 +106,13 @@ class BulkGoodsFeeTest extends \PHPUnit\Framework\TestCase
      * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/tax_rates.php
      * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/products.php
      */
-    public function testItAddsBulkGoodsFeeToOrderWithPartialInvoice()
+    public function testItAddsBulkGoodsFeeToOrderWithPartialInvoice(): void
     {
         $quantities = [];
         $expectedBulkGoodsFee = 10;
         $expectedBulkGoodsTax = 1.6;
-        $firstInvoiceExpectedTax = 11.1;
-        $secondInvoiceExpectedTax = 9.5;
+        $firstInvoiceExpectedTax = 9.5;
+        $secondInvoiceExpectedTax = 11.1;
         $orderExpectedTax = 20.6;
         $orderExpectedTotal = 129;
 
