@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 namespace MageSuite\BulkGoods\Model\Total\Invoice;
 
 class BulkGoodsTax extends \Magento\Sales\Model\Order\Invoice\Total\AbstractTotal
@@ -22,8 +23,5 @@ class BulkGoodsTax extends \Magento\Sales\Model\Order\Invoice\Total\AbstractTota
     {
         $invoice->setBulkGoodsTax($bulkGoodsTax);
         $invoice->getOrder()->setBulkGoodsTaxInvoiced($bulkGoodsTax);
-        $invoice->setTaxAmount($invoice->getTaxAmount() + $bulkGoodsTax);
-        $invoice->setGrandTotal($invoice->getGrandTotal() + $bulkGoodsTax);
-        $invoice->setBaseGrandTotal($invoice->getBaseGrandTotal() + $bulkGoodsTax);
     }
 }

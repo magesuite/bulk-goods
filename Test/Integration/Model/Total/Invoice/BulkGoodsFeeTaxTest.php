@@ -1,28 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MageSuite\BulkGoods\Test\Integration\Model\Total\Invoice;
 
 class BulkGoodsFeeTaxTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @var \MageSuite\BulkGoods\Test\Integration\Helper\Order
-     */
-    protected $orderHelper;
-
-    /**
-     * @var \Magento\Sales\Model\Service\InvoiceService
-     */
-    protected $invoiceService;
-
-    /**
-     * @var \Magento\Framework\Api\SearchCriteriaBuilder
-     */
-    protected $searchCriteriaBuilder;
-
-    /**
-     * @var \Magento\Sales\Model\OrderRepository
-     */
-    protected $orderRepository;
+    protected ?\MageSuite\BulkGoods\Test\Integration\Helper\Order $orderHelper = null;
+    protected ?\Magento\Sales\Model\Service\InvoiceService $invoiceService = null;
+    protected ?\Magento\Framework\Api\SearchCriteriaBuilder $searchCriteriaBuilder = null;
+    protected ?\Magento\Sales\Model\OrderRepository $orderRepository = null;
 
     public function setUp(): void
     {
@@ -32,6 +19,7 @@ class BulkGoodsFeeTaxTest extends \PHPUnit\Framework\TestCase
         $this->searchCriteriaBuilder = $objectManager->get(\Magento\Framework\Api\SearchCriteriaBuilder::class);
         $this->orderRepository = $objectManager->get(\Magento\Sales\Model\OrderRepository::class);
     }
+
     /**
      * @magentoAppIsolation enabled
      * @magentoDbIsolation enabled
@@ -44,15 +32,17 @@ class BulkGoodsFeeTaxTest extends \PHPUnit\Framework\TestCase
      * @magentoConfigFixture current_store tax/classes/shipping_tax_class 2
      * @magentoConfigFixture current_store tax/defaults/country DE
      * @magentoConfigFixture current_store shipping/origin/country_id DE
-     * @magentoDataFixture loadConfigurableProductFixture
-     * @magentoDataFixture loadTaxRates
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/configurable_product.php
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/tax_rates.php
      */
-    public function testItAddsBulkGoodsFeeWithCorrectTaxToInvoiceWithConfigurableProduct()
+    public function testItAddsBulkGoodsFeeWithCorrectTaxToInvoiceWithConfigurableProduct(): void
     {
         $expectedFeeWithTax = 10;
         $expectedFeeWithoutTax = 8.4;
         $expectedInvoiceTax = 1.9;
         $expectedBulkGoodsTax = 1.6;
+        $expectedInvoiceBaseGrandTotal = 21.9;
+        $expectedInvoiceGrandTotal = 21.9;
 
         $eavConfig = \Magento\Framework\App\ObjectManager::getInstance()->get(\Magento\Eav\Model\Config::class);
         $attribute = $eavConfig->getAttribute('catalog_product', 'test_configurable');
@@ -69,6 +59,8 @@ class BulkGoodsFeeTaxTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals($expectedFeeWithTax, $invoice->getBulkGoodsFee());
         $this->assertEquals($expectedInvoiceTax + $expectedBulkGoodsTax, $invoice->getTaxAmount());
+        $this->assertEquals($expectedInvoiceBaseGrandTotal, $invoice->getBaseGrandTotal());
+        $this->assertEquals($expectedInvoiceGrandTotal, $invoice->getGrandTotal());
 
         $orderWithoutTax = $this->orderHelper->createOrder('FR', $request);
         $invoice = $this->invoiceService->prepareInvoice($orderWithoutTax);
@@ -76,27 +68,5 @@ class BulkGoodsFeeTaxTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals($expectedFeeWithoutTax, $invoice->getBulkGoodsFee());
         $this->assertEquals(0, $invoice->getTaxAmount());
-    }
-
-    protected function getOrderByIncrementId($orderId)
-    {
-        $searchCriteria = $this->searchCriteriaBuilder->addFilter('increment_id', $orderId)->create();
-        $orders = $this->orderRepository->getList($searchCriteria)->getItems();
-        return current($orders);
-    }
-
-    public static function loadConfigurableProductFixture()
-    {
-        require __DIR__ . '/../../../_files/configurable_product.php';
-    }
-
-    public static function loadOrderWithConfigurableFixture()
-    {
-        require __DIR__ . '/../../../../../../../../dev/tests/integration/testsuite/Magento/ConfigurableProduct/_files/order_item_with_configurable_and_options.php';
-    }
-
-    public static function loadTaxRates()
-    {
-        require __DIR__ . '/../../../_files/tax_rates.php';
     }
 }
