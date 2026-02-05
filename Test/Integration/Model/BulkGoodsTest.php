@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace MageSuite\BulkGoods\Test\Integration\Model;
 
 /**
@@ -7,25 +10,13 @@ namespace MageSuite\BulkGoods\Test\Integration\Model;
  */
 class BulkGoodsTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @var \MageSuite\BulkGoods\Test\Integration\Helper\Order
-     */
-    protected $orderHelper;
+    protected \MageSuite\BulkGoods\Test\Integration\Helper\Order $orderHelper;
 
-    /**
-     * @var \MageSuite\BulkGoods\Api\BulkGoodsInterface
-     */
-    protected $bulkGoods;
+    protected \MageSuite\BulkGoods\Api\BulkGoodsInterface $bulkGoods;
 
-    /**
-     * @var \Magento\Sales\Api\OrderRepositoryInterface
-     */
-    protected $orderRepository;
+    protected \Magento\Sales\Api\OrderRepositoryInterface $orderRepository;
 
-    /**
-     * @var \Magento\Sales\Model\Service\InvoiceService
-     */
-    protected $invoiceService;
+    protected \Magento\Sales\Model\Service\InvoiceService $invoiceService;
 
     public function setUp(): void
     {
@@ -49,10 +40,10 @@ class BulkGoodsTest extends \PHPUnit\Framework\TestCase
      * @magentoAppArea frontend
      * @magentoAppIsolation enabled
      * @magentoDbIsolation enabled
-     * @magentoDataFixture loadProducts
-     * @magentoDataFixture loadTaxRates
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/products.php
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/tax_rates.php
      */
-    public function testItAddsBulkGoodsFeeInclTaxCorrectlyToOrder()
+    public function testItAddsBulkGoodsFeeInclTaxCorrectlyToOrder(): void
     {
         $expectedFee = 8.4;
         $order = $this->orderHelper->createOrder();
@@ -72,10 +63,10 @@ class BulkGoodsTest extends \PHPUnit\Framework\TestCase
      * @magentoAppArea frontend
      * @magentoAppIsolation enabled
      * @magentoDbIsolation enabled
-     * @magentoDataFixture loadProducts
-     * @magentoDataFixture loadTaxRates
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/products.php
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/tax_rates.php
      */
-    public function testItAddsBulkGoodsFeeInclTaxWithDifferentShippingCountryCorrectlyToOrder()
+    public function testItAddsBulkGoodsFeeInclTaxWithDifferentShippingCountryCorrectlyToOrder(): void
     {
         $expectedFee = 8.13;
         $order = $this->orderHelper->createOrder('PL');
@@ -97,10 +88,10 @@ class BulkGoodsTest extends \PHPUnit\Framework\TestCase
      * @magentoAppArea frontend
      * @magentoAppIsolation enabled
      * @magentoDbIsolation enabled
-     * @magentoDataFixture loadProducts
-     * @magentoDataFixture loadTaxRates
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/products.php
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/tax_rates.php
      */
-    public function testItAddsBulkGoodsFeeExclTaxCorrectlyToOrder()
+    public function testItAddsBulkGoodsFeeExclTaxCorrectlyToOrder(): void
     {
         $expectedFee = 10;
         $order = $this->orderHelper->createOrder();
@@ -118,10 +109,10 @@ class BulkGoodsTest extends \PHPUnit\Framework\TestCase
      * @magentoDbIsolation enabled
      * @magentoAppIsolation enabled
      * @magentoAppArea frontend
-     * @magentoDataFixture loadProducts
-     * @magentoDataFixture loadTaxRates
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/products.php
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/tax_rates.php
      */
-    public function testBulkGoodsFeeIsNotReducedForInvoice()
+    public function testBulkGoodsFeeIsNotReducedForInvoice(): void
     {
         $order = $this->orderHelper->createOrder('DE');
         $invoice = $this->invoiceService->prepareInvoice($order);
@@ -142,10 +133,10 @@ class BulkGoodsTest extends \PHPUnit\Framework\TestCase
      * @magentoDbIsolation enabled
      * @magentoAppIsolation enabled
      * @magentoAppArea frontend
-     * @magentoDataFixture loadProducts
-     * @magentoDataFixture loadTaxRates
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/products.php
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/tax_rates.php
      */
-    public function testTotalsWithBulkGoodsAndTaxesIsSameOnOrderAndInvoice()
+    public function testTotalsWithBulkGoodsAndTaxesIsSameOnOrderAndInvoice(): void
     {
         $order = $this->orderHelper->createOrder('DE');
         $invoice = $this->invoiceService->prepareInvoice($order);
@@ -155,15 +146,5 @@ class BulkGoodsTest extends \PHPUnit\Framework\TestCase
         $orderTotals = $order->getGrandTotal();
         $invoiceTotals = $invoice->getGrandTotal();
         $this->assertEquals($orderTotals, $invoiceTotals);
-    }
-
-    public static function loadTaxRates()
-    {
-        require __DIR__ . '/../_files/tax_rates.php';
-    }
-
-    public static function loadProducts()
-    {
-        require __DIR__ . '/../_files/products.php';
     }
 }
