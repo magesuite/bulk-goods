@@ -1,67 +1,27 @@
 <?php
-namespace MageSuite\BulkGoods\Test\Integration\Model;
 
+declare(strict_types=1);
+
+namespace MageSuite\BulkGoods\Test\Integration\Model;
 
 /**
  * @magentoDbIsolation enabled
  * @magentoAppIsolation enabled
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class BulkGoodsTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @var \Magento\TestFramework\ObjectManager
-     */
-    protected $objectManager;
-
-    /**
-     * @var \Magento\Store\Model\StoreManagerInterface
-     */
-    protected $storeManager;
-
-    /**
-     * @var \Magento\Quote\Api\CartManagementInterface
-     */
-    protected $cartManagement;
-
-    /**
-     * @var \Magento\Quote\Api\CartRepositoryInterface
-     */
-    protected $cartRepository;
-
-    /**
-     * @var \Magento\Checkout\Model\Cart
-     */
-    protected $cart;
-
-    /**
-     * @var \Magento\Quote\Model\QuoteManagement
-     */
-    protected $quoteManagement;
-
-    /**
-     * @var \Magento\Catalog\Api\ProductRepositoryInterface
-     */
-    protected $productRepository;
-
-    /**
-     * @var MageSuite\BulkGoods\Api\BulkGoodsInterface
-     */
-    protected $bulkGoods;
-
-    /**
-     * @var \Magento\Sales\Api\OrderRepositoryInterface
-     */
-    protected $orderRepository;
-
-    /**
-     * @var \Magento\Framework\Api\SearchCriteriaBuilder
-     */
-    protected $searchCriteriaBuilder;
-
-    /**
-     * @var \Magento\Sales\Model\Service\InvoiceService
-     */
-    protected $invoiceService;
+    protected ?\Magento\Framework\App\ObjectManager $objectManager;
+    protected ?\Magento\Store\Model\StoreManagerInterface $storeManager;
+    protected ?\Magento\Quote\Api\CartManagementInterface $cartManagement;
+    protected ?\Magento\Quote\Api\CartRepositoryInterface $cartRepository;
+    protected ?\Magento\Checkout\Model\Cart $cart;
+    protected ?\Magento\Quote\Model\QuoteManagement $quoteManagement;
+    protected ?\Magento\Catalog\Api\ProductRepositoryInterface $productRepository;
+    protected ?\MageSuite\BulkGoods\Api\BulkGoodsInterface $bulkGoods;
+    protected ?\Magento\Sales\Api\OrderRepositoryInterface $orderRepository;
+    protected ?\Magento\Framework\Api\SearchCriteriaBuilder $searchCriteriaBuilder;
+    protected ?\Magento\Sales\Model\Service\InvoiceService $invoiceService;
 
     public function setUp(): void
     {
@@ -89,10 +49,10 @@ class BulkGoodsTest extends \PHPUnit\Framework\TestCase
      * @magentoAppArea frontend
      * @magentoAppIsolation enabled
      * @magentoDbIsolation enabled
-     * @magentoDataFixture loadProducts
-     * @magentoDataFixture loadTaxRates
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/products.php
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/tax_rates.php
      */
-    public function testItAddsBulkGoodsFeeInclTaxCorrectlyToOrder()
+    public function testItAddsBulkGoodsFeeInclTaxCorrectlyToOrder(): void
     {
         $expectedFee = 8.4;
         $quote = $this->prepareQuote();
@@ -116,10 +76,10 @@ class BulkGoodsTest extends \PHPUnit\Framework\TestCase
      * @magentoAppArea frontend
      * @magentoAppIsolation enabled
      * @magentoDbIsolation enabled
-     * @magentoDataFixture loadProducts
-     * @magentoDataFixture loadTaxRates
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/products.php
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/tax_rates.php
      */
-    public function testItAddsBulkGoodsFeeExclTaxCorrectlyToOrder()
+    public function testItAddsBulkGoodsFeeExclTaxCorrectlyToOrder(): void
     {
         $expectedFee = 10;
         $quote = $this->prepareQuote();
@@ -140,9 +100,9 @@ class BulkGoodsTest extends \PHPUnit\Framework\TestCase
      * @magentoDbIsolation enabled
      * @magentoAppIsolation enabled
      * @magentoAppArea frontend
-     * @magentoDataFixture loadTaxRates
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/tax_rates.php
      */
-    public function testBulkGoodsFeeIsNotReducedForInvoice()
+    public function testBulkGoodsFeeIsNotReducedForInvoice(): void
     {
         $order = $this->findOrderByIncrementId('100000001');
         $order->setData(\MageSuite\BulkGoods\Model\BulkGoods::BULK_GOODS_FEE_CODE, 9);
@@ -157,9 +117,10 @@ class BulkGoodsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedFee, $bulkGoodsFee);
     }
 
-    protected function prepareQuote()
+    protected function prepareQuote(): \Magento\Quote\Model\Quote
     {
         $cartId = $this->cartManagement->createEmptyCart();
+        /** @var \Magento\Quote\Model\Quote $quote */
         $quote = $this->cartRepository->get($cartId);
         $store = $this->storeManager->getStore(1);
         $quote->setStore($store);
@@ -219,15 +180,5 @@ class BulkGoodsTest extends \PHPUnit\Framework\TestCase
             ->getItems();
 
         return array_shift($orders);
-    }
-
-    public static function loadTaxRates()
-    {
-        require __DIR__ . '/../_files/tax_rates.php';
-    }
-
-    public static function loadProducts()
-    {
-        require __DIR__ . '/../_files/products.php';
     }
 }
