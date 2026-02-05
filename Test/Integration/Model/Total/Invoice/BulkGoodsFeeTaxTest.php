@@ -1,28 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MageSuite\BulkGoods\Test\Integration\Model\Total\Invoice;
 
 class BulkGoodsFeeTaxTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @var \MageSuite\BulkGoods\Test\Integration\Helper\Order
-     */
-    protected $orderHelper;
+    protected \MageSuite\BulkGoods\Test\Integration\Helper\Order $orderHelper;
 
-    /**
-     * @var \Magento\Sales\Model\Service\InvoiceService
-     */
-    protected $invoiceService;
+    protected \Magento\Sales\Model\Service\InvoiceService $invoiceService;
 
-    /**
-     * @var \Magento\Framework\Api\SearchCriteriaBuilder
-     */
-    protected $searchCriteriaBuilder;
+    protected \Magento\Framework\Api\SearchCriteriaBuilder $searchCriteriaBuilder;
 
-    /**
-     * @var \Magento\Sales\Model\OrderRepository
-     */
-    protected $orderRepository;
+    protected \Magento\Sales\Model\OrderRepository $orderRepository;
 
     public function setUp(): void
     {
@@ -44,10 +34,10 @@ class BulkGoodsFeeTaxTest extends \PHPUnit\Framework\TestCase
      * @magentoConfigFixture current_store tax/classes/shipping_tax_class 2
      * @magentoConfigFixture current_store tax/defaults/country DE
      * @magentoConfigFixture current_store shipping/origin/country_id DE
-     * @magentoDataFixture loadConfigurableProductFixture
-     * @magentoDataFixture loadTaxRates
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/configurable_product.php
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/tax_rates.php
      */
-    public function testItAddsBulkGoodsFeeWithCorrectTaxToInvoiceWithConfigurableProduct()
+    public function testItAddsBulkGoodsFeeWithCorrectTaxToInvoiceWithConfigurableProduct(): void
     {
         $expectedFeeWithTax = 10;
         $expectedFeeWithoutTax = 8.4;
@@ -83,20 +73,5 @@ class BulkGoodsFeeTaxTest extends \PHPUnit\Framework\TestCase
         $searchCriteria = $this->searchCriteriaBuilder->addFilter('increment_id', $orderId)->create();
         $orders = $this->orderRepository->getList($searchCriteria)->getItems();
         return current($orders);
-    }
-
-    public static function loadConfigurableProductFixture()
-    {
-        require __DIR__ . '/../../../_files/configurable_product.php';
-    }
-
-    public static function loadOrderWithConfigurableFixture()
-    {
-        require __DIR__ . '/../../../../../../../../dev/tests/integration/testsuite/Magento/ConfigurableProduct/_files/order_item_with_configurable_and_options.php';
-    }
-
-    public static function loadTaxRates()
-    {
-        require __DIR__ . '/../../../_files/tax_rates.php';
     }
 }

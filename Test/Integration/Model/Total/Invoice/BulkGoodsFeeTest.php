@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace MageSuite\BulkGoods\Test\Integration\Model\Total\Invoice;
 
 /**
@@ -7,15 +10,9 @@ namespace MageSuite\BulkGoods\Test\Integration\Model\Total\Invoice;
  */
 class BulkGoodsFeeTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @var \MageSuite\BulkGoods\Test\Integration\Helper\Order
-     */
-    protected $orderHelper;
+    protected \MageSuite\BulkGoods\Test\Integration\Helper\Order $orderHelper;
 
-    /**
-     * @var \Magento\Sales\Model\Service\InvoiceService
-     */
-    protected $invoiceService;
+    protected \Magento\Sales\Model\Service\InvoiceService $invoiceService;
 
     public function setUp(): void
     {
@@ -37,10 +34,10 @@ class BulkGoodsFeeTest extends \PHPUnit\Framework\TestCase
      * @magentoConfigFixture current_store tax/classes/shipping_tax_class 2
      * @magentoConfigFixture current_store tax/defaults/country DE
      * @magentoConfigFixture current_store shipping/origin/country_id DE
-     * @magentoDataFixture loadProducts
-     * @magentoDataFixture loadTaxRates
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/products.php
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/tax_rates.php
      */
-    public function testItAddsBulkGoodsFeeWithCorrectTaxToInvoice()
+    public function testItAddsBulkGoodsFeeWithCorrectTaxToInvoice(): void
     {
         $expectedFeeWithTax = 10;
         $expectedFeeWithoutTax = 8.4;
@@ -76,10 +73,10 @@ class BulkGoodsFeeTest extends \PHPUnit\Framework\TestCase
      * @magentoConfigFixture current_store tax/classes/shipping_tax_class 2
      * @magentoConfigFixture current_store tax/defaults/country DE
      * @magentoConfigFixture current_store shipping/origin/country_id DE
-     * @magentoDataFixture loadProducts
-     * @magentoDataFixture loadTaxRates
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/products.php
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/tax_rates.php
      */
-    public function testItAddsBulkGoodsFeeWithCorrectTaxToInvoiceWithDifferentShippingCountry()
+    public function testItAddsBulkGoodsFeeWithCorrectTaxToInvoiceWithDifferentShippingCountry(): void
     {
         $expectedFee = 10;
         $expectedTax = 1.87;
@@ -91,15 +88,5 @@ class BulkGoodsFeeTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals($expectedFee, $invoice->getBulkGoodsFee());
         $this->assertEquals($expectedTax, $invoice->getTaxAmount());
-    }
-
-    public static function loadTaxRates()
-    {
-        require __DIR__ . '/../../../_files/tax_rates.php';
-    }
-
-    public static function loadProducts()
-    {
-        require __DIR__ . '/../../../_files/products.php';
     }
 }
