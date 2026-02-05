@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace MageSuite\BulkGoods\Test\Integration\Observer;
 
 /**
@@ -7,20 +10,11 @@ namespace MageSuite\BulkGoods\Test\Integration\Observer;
  */
 class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @var \Magento\TestFramework\ObjectManager
-     */
-    protected $objectManager;
+    protected \Magento\TestFramework\ObjectManager $objectManager;
 
-    /**
-     * @var \MageSuite\BulkGoods\Model\BulkGoods
-     */
-    protected $bulkGoods;
+    protected \MageSuite\BulkGoods\Model\BulkGoods $bulkGoods;
 
-    /**
-     * @var \MageSuite\BulkGoods\Test\Integration\Helper\Order
-     */
-    protected $orderHelper;
+    protected \MageSuite\BulkGoods\Test\Integration\Helper\Order $orderHelper;
 
     public function setUp(): void
     {
@@ -29,15 +23,6 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
         $this->orderHelper = $this->objectManager->get(\MageSuite\BulkGoods\Test\Integration\Helper\Order::class);
     }
 
-    public static function loadTaxRates()
-    {
-        require __DIR__ . '/../_files/tax_rates.php';
-    }
-
-    public static function loadProducts()
-    {
-        require __DIR__ . '/../_files/products.php';
-    }
 
     /**
      * @magentoConfigFixture default_store bulk_goods/general/is_enabled 0
@@ -45,9 +30,9 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
      * @magentoAppArea frontend
      * @magentoAppIsolation enabled
      * @magentoDbIsolation enabled
-     * @magentoDataFixture loadProducts
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/products.php
      */
-    public function testItDoesntAddBulkGoodsFee()
+    public function testItDoesntAddBulkGoodsFee(): void
     {
         $expectedFee = 0;
         $order = $this->orderHelper->createOrder();
@@ -62,9 +47,9 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
      * @magentoAppArea frontend
      * @magentoAppIsolation enabled
      * @magentoDbIsolation enabled
-     * @magentoDataFixture loadProducts
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/products.php
      */
-    public function testItAddsBulkGoodsFeeInclTaxCorrectlyToOrder()
+    public function testItAddsBulkGoodsFeeInclTaxCorrectlyToOrder(): void
     {
         $expectedFee = 10;
         $quote = $this->orderHelper->prepareQuote();
@@ -93,10 +78,10 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
      * @magentoAppArea frontend
      * @magentoAppIsolation enabled
      * @magentoDbIsolation enabled
-     * @magentoDataFixture loadProducts
-     * @magentoDataFixture loadTaxRates
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/products.php
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/tax_rates.php
      */
-    public function testItAddsBulkGoodsFeeExclTaxCorrectlyToOrder()
+    public function testItAddsBulkGoodsFeeExclTaxCorrectlyToOrder(): void
     {
         $expectedFee = 11.9;
         $quote = $this->orderHelper->prepareQuote();
@@ -125,10 +110,10 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
      * @magentoAppArea frontend
      * @magentoAppIsolation enabled
      * @magentoDbIsolation enabled
-     * @magentoDataFixture loadProducts
-     * @magentoDataFixture loadTaxRates
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/products.php
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/tax_rates.php
      */
-    public function testItAddsBulkGoodsFeeInclTaxBasedOnShippingAddressCorrectlyToOrder()
+    public function testItAddsBulkGoodsFeeInclTaxBasedOnShippingAddressCorrectlyToOrder(): void
     {
         // de tax rate 19%
         $expectedFee = 10;
@@ -158,10 +143,10 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
      * @magentoAppArea frontend
      * @magentoAppIsolation enabled
      * @magentoDbIsolation enabled
-     * @magentoDataFixture loadProducts
-     * @magentoDataFixture loadTaxRates
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/products.php
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/tax_rates.php
      */
-    public function testItAddsBulkGoodsFeeInclTaxBasedOnShippingAddressWithDifferentShippingCountryCorrectlyToOrder()
+    public function testItAddsBulkGoodsFeeInclTaxBasedOnShippingAddressWithDifferentShippingCountryCorrectlyToOrder(): void
     {
         // pl tax rate 23%
         $expectedFee = 10;
@@ -193,8 +178,8 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
      * @magentoAppArea adminhtml
      * @magentoAppIsolation enabled
      * @magentoDbIsolation enabled
-     * @magentoDataFixture loadProducts
-     * @magentoDataFixture loadTaxRates
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/products.php
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/tax_rates.php
      */
     public function testBulkGoodsAmountInTotalBlockExcludedTax(): void
     {
@@ -222,8 +207,8 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
      * @magentoAppArea adminhtml
      * @magentoAppIsolation enabled
      * @magentoDbIsolation enabled
-     * @magentoDataFixture loadProducts
-     * @magentoDataFixture loadTaxRates
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/products.php
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/tax_rates.php
      */
     public function testBulkGoodsAmountInTotalBlockIncludedTax(): void
     {
@@ -251,8 +236,8 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
      * @magentoAppArea adminhtml
      * @magentoAppIsolation enabled
      * @magentoDbIsolation enabled
-     * @magentoDataFixture loadProducts
-     * @magentoDataFixture loadTaxRates
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/products.php
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/tax_rates.php
      */
     public function testBulkGoodsAmountInTotalBlockIncludedAndExcludedTax(): void
     {
