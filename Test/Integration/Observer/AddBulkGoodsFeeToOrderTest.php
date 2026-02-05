@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace MageSuite\BulkGoods\Test\Integration\Observer;
 
 /**
@@ -7,52 +10,17 @@ namespace MageSuite\BulkGoods\Test\Integration\Observer;
  */
 class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @var \Magento\TestFramework\ObjectManager
-     */
-    protected $objectManager;
+    protected \Magento\Framework\App\ObjectManager $objectManager;
+    protected \Magento\Store\Model\StoreManagerInterface $storeManager;
+    protected \Magento\Quote\Api\CartManagementInterface $cartManagement;
+    protected \Magento\Quote\Api\CartRepositoryInterface $cartRepository;
+    protected \Magento\Checkout\Model\Cart $cart;
+    protected \Magento\Quote\Model\QuoteManagement $quoteManagement;
+    protected \Magento\Catalog\Api\ProductRepositoryInterface $productRepository;
+    protected \MageSuite\BulkGoods\Model\BulkGoods $bulkGoods;
+    protected \Magento\Sales\Api\OrderRepositoryInterface $orderRepository;
 
-    /**
-     * @var \Magento\Store\Model\StoreManagerInterface
-     */
-    protected $storeManager;
-
-    /**
-     * @var \Magento\Quote\Api\CartManagementInterface
-     */
-    protected $cartManagement;
-
-    /**
-     * @var \Magento\Quote\Api\CartRepositoryInterface
-     */
-    protected $cartRepository;
-
-    /**
-     * @var \Magento\Checkout\Model\Cart
-     */
-    protected $cart;
-
-    /**
-     * @var \Magento\Quote\Model\QuoteManagement
-     */
-    protected $quoteManagement;
-
-    /**
-     * @var \Magento\Catalog\Api\ProductRepositoryInterface
-     */
-    protected $productRepository;
-
-    /**
-     * @var \MageSuite\BulkGoods\Model\BulkGoods
-     */
-    protected $bulkGoods;
-
-    /**
-     * @var \Magento\Sales\Api\OrderRepositoryInterface
-     */
-    protected $orderRepository;
-
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->objectManager = \Magento\TestFramework\ObjectManager::getInstance();
 
@@ -64,25 +32,15 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
         $this->orderRepository = $this->objectManager->get(\Magento\Sales\Api\OrderRepositoryInterface::class);
     }
 
-    public static function loadTaxRates()
-    {
-        require __DIR__ . '/../_files/tax_rates.php';
-    }
-
-    public static function loadProducts()
-    {
-        require __DIR__ . '/../_files/products.php';
-    }
-
     /**
      * @magentoConfigFixture default_store bulk_goods/general/is_enabled 0
      * @magentoConfigFixture default_store bulk_goods/general/fee 10
      * @magentoAppArea frontend
      * @magentoAppIsolation enabled
      * @magentoDbIsolation enabled
-     * @magentoDataFixture loadProducts
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/products.php
      */
-    public function testItDoesntAddBulkGoodsFee()
+    public function testItDoesntAddBulkGoodsFee(): void
     {
         $expectedFee = 0;
         $qty = 1;
@@ -91,6 +49,7 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
         $quote = $this->prepareQuote($product, $qty);
         $orderId = $this->cartManagement->placeOrder($quote->getId());
 
+        /** @var \Magento\Sales\Model\Order $order */
         $order = $this->orderRepository->get($orderId);
 
         $this->assertEquals($expectedFee, $order->getBulkGoodsFee());
@@ -103,9 +62,9 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
      * @magentoAppArea frontend
      * @magentoAppIsolation enabled
      * @magentoDbIsolation enabled
-     * @magentoDataFixture loadProducts
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/products.php
      */
-    public function testItAddsBulkGoodsFeeInclTaxCorrectlyToOrder()
+    public function testItAddsBulkGoodsFeeInclTaxCorrectlyToOrder(): void
     {
         $expectedFee = 10;
         $qty = 1;
@@ -119,6 +78,7 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(20, $totals['grand_total']->getValue());
 
         $orderId = $this->cartManagement->placeOrder($quote->getId());
+        /** @var \Magento\Sales\Model\Order $order */
         $order = $this->orderRepository->get($orderId);
         $this->assertEquals($expectedFee, $order->getBulkGoodsFee());
     }
@@ -136,10 +96,10 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
      * @magentoAppArea frontend
      * @magentoAppIsolation enabled
      * @magentoDbIsolation enabled
-     * @magentoDataFixture loadProducts
-     * @magentoDataFixture loadTaxRates
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/products.php
+     * @magentoDataFixture MageSuite_BulkGoods::Test/Integration/_files/tax_rates.php
      */
-    public function testItAddsBulkGoodsFeeExclTaxCorrectlyToOrder()
+    public function testItAddsBulkGoodsFeeExclTaxCorrectlyToOrder(): void
     {
         $expectedFee = 11.9;
         $qty = 1;
@@ -153,11 +113,12 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(21.9, $totals['grand_total']->getValue());
 
         $orderId = $this->cartManagement->placeOrder($quote->getId());
+        /** @var \Magento\Sales\Model\Order $order */
         $order = $this->orderRepository->get($orderId);
         $this->assertEquals($expectedFee, $order->getBulkGoodsFee());
     }
 
-    private function prepareQuote($product, $qty)
+    private function prepareQuote(\Magento\Catalog\Api\Data\ProductInterface $product, int $qty): \Magento\Quote\Model\Quote
     {
         $addressData = [
             'region_id' => '82',
@@ -174,9 +135,9 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
         $shippingMethod = 'freeshipping_freeshipping';
 
         $store = $this->storeManager->getStore(1);
-        $websiteId = $store->getWebsiteId();
 
         $cartId = $this->cartManagement->createEmptyCart();
+        /** @var \Magento\Quote\Model\Quote $quote */
         $quote = $this->cartRepository->get($cartId);
         $quote->setStore($store);
 
@@ -185,7 +146,7 @@ class AddBulkGoodsFeeToOrderTest extends \PHPUnit\Framework\TestCase
 
         $quote->setCurrency();
 
-        $quote->addProduct($product, intval($qty));
+        $quote->addProduct($product, $qty);
 
         $billingAddress = $this->objectManager->create('Magento\Quote\Api\Data\AddressInterface', ['data' => $addressData]);
         $billingAddress->setAddressType('billing');
